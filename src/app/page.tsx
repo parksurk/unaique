@@ -357,21 +357,23 @@ export default function Home() {
       </section>
 
       {/* CTA Section */}
-      <section className="container mx-auto px-4 sm:px-6 lg:px-8 py-24 bg-gradient-to-r from-slate-900 to-slate-800 rounded-3xl mx-4 sm:mx-6 lg:mx-8">
-        <div className="mx-auto max-w-4xl text-center">
-          <h2 className="text-3xl font-bold tracking-tight text-white sm:text-4xl mb-6">
-            지금 바로 시작하세요
-          </h2>
-          <p className="text-lg text-slate-300 mb-10 max-w-2xl mx-auto">
-            AI의 힘으로 당신만의 독특한 동영상을 만들어보세요
-          </p>
-          <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
-            <Button size="lg" variant="secondary">
-              무료 체험하기
-            </Button>
-            <Button size="lg" variant="outline" className="border-white text-white hover:bg-white hover:text-slate-900">
-              상담 문의
-            </Button>
+      <section className="container mx-auto px-4 sm:px-6 lg:px-8 py-24">
+        <div className="mx-auto max-w-4xl">
+          <div className="bg-gradient-to-r from-slate-900 to-slate-800 rounded-3xl p-12 text-center">
+            <h2 className="text-3xl font-bold tracking-tight text-white sm:text-4xl mb-6">
+              지금 바로 시작하세요
+            </h2>
+            <p className="text-lg text-slate-300 mb-10 max-w-2xl mx-auto">
+              AI의 힘으로 당신만의 독특한 동영상을 만들어보세요
+            </p>
+            <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
+              <Button size="lg" variant="secondary">
+                무료 체험하기
+              </Button>
+              <Button size="lg" variant="secondary">
+                상담 문의
+              </Button>
+            </div>
           </div>
         </div>
       </section>
