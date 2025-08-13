@@ -4,17 +4,11 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { 
   Video, 
   Sparkles, 
-  Users, 
-  Zap, 
-  Star, 
-  Play,
   ArrowRight,
   CheckCircle,
   Headphones,
   Mic,
   Palette,
-  Clock,
-  Globe,
   Shield,
   BarChart3,
   Lightbulb
@@ -120,11 +114,11 @@ export default function FeaturesPage() {
                 </div>
                 <div className="space-y-4 text-sm">
                   <div className="bg-white rounded-lg p-4 border border-blue-200">
-                    <p className="text-slate-800 font-medium">입력: "유튜브용 교육 영상, AI 기술 소개, 5분"</p>
+                    <p className="text-slate-800 font-medium">입력: &ldquo;유튜브용 교육 영상, AI 기술 소개, 5분&rdquo;</p>
                   </div>
                   <div className="bg-gradient-to-r from-blue-600 to-purple-600 text-white rounded-lg p-4">
                     <p className="font-medium">AI 생성 결과:</p>
-                    <p className="mt-2">🎬 제목: "AI 기술이 바꾸는 우리의 미래"</p>
+                    <p className="mt-2">🎬 제목: &ldquo;AI 기술이 바꾸는 우리의 미래&rdquo;</p>
                     <p>📝 구조: 도입(30초) → AI 정의(1분) → 실제 활용사례(2분) → 미래 전망(1분) → 마무리(30초)</p>
                     <p>💡 핵심 포인트: 시청자 참여 유도, 구체적 예시 포함, 쉬운 용어 사용</p>
                   </div>

@@ -4,27 +4,19 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { 
   Video, 
   Sparkles, 
-  Users, 
-  Zap, 
-  Star, 
   Play,
   ArrowRight,
   CheckCircle,
-  Headphones,
-  Mic,
+  BookOpen,
+  TrendingUp,
+  Heart,
+  Music,
+  Target,
   Palette,
   Clock,
   Globe,
   Shield,
-  BarChart3,
-  Lightbulb,
-  BookOpen,
-  TrendingUp,
-  ShoppingCart,
-  Heart,
-  Music,
-  Camera,
-  Target
+  Star
 } from "lucide-react"
 
 export default function TemplatesPage() {
@@ -217,7 +209,7 @@ export default function TemplatesPage() {
           </div>
           
           <div className="space-y-16">
-            {templateCategories.map((category, categoryIndex) => (
+            {templateCategories.map((category) => (
               <div key={category.name}>
                 <div className="flex items-center space-x-3 mb-8">
                   <div className="flex h-12 w-12 items-center justify-center rounded-lg bg-gradient-to-r from-blue-500 to-purple-600">
