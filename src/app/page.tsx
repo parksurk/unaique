@@ -1,94 +1,402 @@
-import Image from "next/image";
+import Link from "next/link"
+import { Button } from "@/components/ui/button"
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
+import {
+  NavigationMenu,
+  NavigationMenuContent,
+  NavigationMenuItem,
+  NavigationMenuLink,
+  NavigationMenuList,
+  NavigationMenuTrigger,
+  navigationMenuTriggerStyle,
+} from "@/components/ui/navigation-menu"
+import { 
+  Video, 
+  Mic, 
+  Sparkles, 
+  Users, 
+  Zap, 
+  Star, 
+  Play,
+  ArrowRight,
+  CheckCircle,
+  Headphones
+} from "lucide-react"
 
 export default function Home() {
   return (
-    <div className="font-sans grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20">
-      <main className="flex flex-col gap-[32px] row-start-2 items-center sm:items-start">
-        <div className="text-center sm:text-left">
-          <h1 className="text-4xl sm:text-6xl font-bold mb-4 bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
-            Unaique
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-slate-100">
+      {/* Header */}
+      <header className="sticky top-0 z-50 w-full border-b bg-white/95 backdrop-blur supports-[backdrop-filter]:bg-white/60">
+        <div className="container mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="flex h-16 items-center justify-between">
+            <div className="flex items-center space-x-4">
+              <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-gradient-to-r from-blue-600 to-purple-600">
+                <Video className="h-5 w-5 text-white" />
+              </div>
+              <span className="text-xl font-bold text-slate-900">Unaique</span>
+            </div>
+
+            <NavigationMenu className="hidden md:flex">
+              <NavigationMenuList>
+                <NavigationMenuItem>
+                  <NavigationMenuLink asChild>
+                    <Link href="/" className={navigationMenuTriggerStyle()}>
+                      홈
+                    </Link>
+                  </NavigationMenuLink>
+                </NavigationMenuItem>
+                <NavigationMenuItem>
+                  <NavigationMenuTrigger>서비스</NavigationMenuTrigger>
+                  <NavigationMenuContent>
+                    <div className="grid gap-3 p-6 w-[400px] lg:w-[500px] lg:grid-cols-[.75fr_1fr]">
+                      <div className="row-span-3">
+                        <NavigationMenuLink asChild>
+                          <a
+                            className="flex h-full w-full select-none flex-col justify-end rounded-md bg-gradient-to-b from-muted/50 to-muted p-6 no-underline outline-none focus:shadow-md"
+                            href="/features"
+                          >
+                            <Video className="h-6 w-6" />
+                            <div className="mb-2 mt-4 text-lg font-medium">
+                              AI 동영상 제작
+                            </div>
+                            <p className="text-sm leading-tight text-muted-foreground">
+                              생성형 AI로 전문적인 동영상을 쉽게 제작하세요.
+                            </p>
+                          </a>
+                        </NavigationMenuLink>
+        </div>
+                      <div className="text-sm">
+                        <div className="grid grid-cols-2 gap-3">
+                          <a
+                            className="group block select-none space-y-1 rounded-md p-3 leading-none no-underline outline-none transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground"
+                            href="/templates"
+                          >
+                            <div className="text-sm font-medium leading-none">템플릿</div>
+                            <p className="line-clamp-2 text-xs leading-snug text-muted-foreground">
+                              다양한 장르별 템플릿으로 빠른 제작
+                            </p>
+        </a>
+        <a
+                            className="group block select-none space-y-1 rounded-md p-3 leading-none no-underline outline-none transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground"
+                            href="/pricing"
+                          >
+                            <div className="text-sm font-medium leading-none">가격</div>
+                            <p className="line-clamp-2 text-xs leading-snug text-muted-foreground">
+                              합리적인 가격으로 시작하세요
+                            </p>
+                          </a>
+                        </div>
+                      </div>
+                    </div>
+                  </NavigationMenuContent>
+                </NavigationMenuItem>
+                <NavigationMenuItem>
+                  <NavigationMenuLink asChild>
+                    <Link href="/features" className={navigationMenuTriggerStyle()}>
+                      기능
+                    </Link>
+                  </NavigationMenuLink>
+                </NavigationMenuItem>
+                <NavigationMenuItem>
+                  <NavigationMenuLink asChild>
+                    <Link href="/templates" className={navigationMenuTriggerStyle()}>
+                      템플릿
+                    </Link>
+                  </NavigationMenuLink>
+                </NavigationMenuItem>
+                <NavigationMenuItem>
+                  <NavigationMenuLink asChild>
+                    <Link href="/pricing" className={navigationMenuTriggerStyle()}>
+                      가격
+                    </Link>
+                  </NavigationMenuLink>
+                </NavigationMenuItem>
+                <NavigationMenuItem>
+                  <NavigationMenuLink asChild>
+                    <Link href="/contact" className={navigationMenuTriggerStyle()}>
+                      문의
+                    </Link>
+                  </NavigationMenuLink>
+                </NavigationMenuItem>
+              </NavigationMenuList>
+            </NavigationMenu>
+
+            <div className="flex items-center space-x-4">
+              <Button variant="ghost" size="sm">
+                로그인
+              </Button>
+              <Button size="sm" className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700">
+                시작하기
+              </Button>
+            </div>
+          </div>
+        </div>
+      </header>
+
+      {/* Hero Section */}
+      <section className="container mx-auto px-4 sm:px-6 lg:px-8 py-24 text-center">
+        <div className="mx-auto max-w-4xl">
+          <div className="mb-8">
+            <span className="inline-flex items-center rounded-full bg-blue-50 px-3 py-1 text-sm font-medium text-blue-700 ring-1 ring-inset ring-blue-700/10">
+              <Sparkles className="mr-2 h-4 w-4" />
+              AI 기반 동영상 제작
+            </span>
+          </div>
+          
+          <h1 className="text-4xl font-bold tracking-tight text-slate-900 sm:text-6xl lg:text-7xl">
+            One-man Creator를 위한
+            <span className="block bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
+              AI 동영상 제작 서비스
+            </span>
           </h1>
-          <p className="text-lg sm:text-xl text-gray-600 dark:text-gray-300 max-w-2xl">
-            One-man Creator를 위한 생성형AI 기반 동영상 제작 서비스
+          
+          <p className="mt-6 text-lg leading-8 text-slate-600 max-w-3xl mx-auto">
+            혼자서도 전문적인 동영상을 만들 수 있습니다. AI가 도와주는 스마트한 제작 도구로 
+            창의성을 마음껏 발휘하세요.
           </p>
+          
+          <div className="mt-10 flex items-center justify-center gap-x-6">
+            <Button size="lg" className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700">
+              무료로 시작하기
+              <ArrowRight className="ml-2 h-4 w-4" />
+            </Button>
+            <Button variant="outline" size="lg">
+              <Play className="mr-2 h-4 w-4" />
+              데모 보기
+            </Button>
+          </div>
         </div>
+      </section>
 
-        <div className="text-center sm:text-left max-w-2xl">
-          <h2 className="text-xl sm:text-2xl font-semibold mb-4 text-gray-800 dark:text-gray-200">
-            혼자서도 전문적인 동영상을 만들 수 있습니다
+      {/* Voice Agent Section */}
+      <section className="container mx-auto px-4 sm:px-6 lg:px-8 py-24">
+        <div className="mx-auto max-w-6xl">
+          <div className="text-center mb-16">
+            <h2 className="text-3xl font-bold tracking-tight text-slate-900 sm:text-4xl">
+              음성으로 대화하는 AI 어시스턴트
+            </h2>
+            <p className="mt-4 text-lg text-slate-600 max-w-2xl mx-auto">
+              ElevenLabs Voice Agent와 자연스럽게 대화하며 CS 문의와 영상 제작을 요청하세요
+            </p>
+          </div>
+          
+          <Card className="border-0 shadow-2xl bg-gradient-to-br from-white to-slate-50">
+            <CardHeader className="text-center pb-8">
+              <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-gradient-to-r from-blue-500 to-purple-600">
+                <Headphones className="h-8 w-8 text-white" />
+              </div>
+              <CardTitle className="text-2xl">Unaique AI 어시스턴트</CardTitle>
+              <CardDescription className="text-lg">
+                음성으로 CS 문의와 영상 제작을 도와드립니다
+              </CardDescription>
+            </CardHeader>
+            <CardContent className="px-8 pb-8">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mb-8">
+                <Card className="border-blue-200 bg-blue-50">
+                  <CardHeader>
+                    <div className="flex items-center space-x-2">
+                      <Mic className="h-5 w-5 text-blue-600" />
+                      <CardTitle className="text-lg">CS 문의</CardTitle>
+                    </div>
+                  </CardHeader>
+                  <CardContent>
+                    <p className="text-slate-700">
+                      계정 문제, 결제 문의, 기술 지원 등 모든 고객 서비스를 음성으로 해결
+                    </p>
+                  </CardContent>
+                </Card>
+                
+                <Card className="border-purple-200 bg-purple-50">
+                  <CardHeader>
+                    <div className="flex items-center space-x-2">
+                      <Video className="h-5 w-5 text-purple-600" />
+                      <CardTitle className="text-lg">영상 제작 요청</CardTitle>
+                    </div>
+                  </CardHeader>
+                  <CardContent>
+                    <p className="text-slate-700">
+                      음성으로 영상 주제, 스타일, 길이 등을 설명하면 AI가 자동으로 제작
+                    </p>
+                  </CardContent>
+                </Card>
+              </div>
+              
+              <div className="text-center">
+                <Button size="lg" className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700">
+                  <Mic className="mr-2 h-5 w-5" />
+                  음성 어시스턴트 시작하기
+                </Button>
+                <p className="mt-3 text-sm text-slate-500">마이크 버튼을 누르고 말씀해주세요</p>
+              </div>
+            </CardContent>
+          </Card>
+        </div>
+      </section>
+
+      {/* Features Section */}
+      <section className="container mx-auto px-4 sm:px-6 lg:px-8 py-24 bg-white">
+        <div className="mx-auto max-w-6xl">
+          <div className="text-center mb-16">
+            <h2 className="text-3xl font-bold tracking-tight text-slate-900 sm:text-4xl">
+              주요 기능
+            </h2>
+            <p className="mt-4 text-lg text-slate-600 max-w-2xl mx-auto">
+              Unaique만의 차별화된 AI 기술로 동영상 제작을 혁신하세요
+            </p>
+          </div>
+          
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+            <Card className="border-0 shadow-lg hover:shadow-xl transition-all duration-300 hover:-translate-y-1">
+              <CardHeader className="text-center">
+                <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-blue-100">
+                  <Sparkles className="h-8 w-8 text-blue-600" />
+                </div>
+                <CardTitle>AI 스크립트 생성</CardTitle>
+                <CardDescription>
+                  키워드만 입력하면 AI가 자동으로 스크립트와 스토리보드를 생성합니다
+                </CardDescription>
+              </CardHeader>
+              <CardContent>
+                <ul className="space-y-3 text-sm text-slate-600">
+                  <li className="flex items-center space-x-2">
+                    <CheckCircle className="h-4 w-4 text-green-500" />
+                    <span>자연스러운 한국어 스크립트</span>
+                  </li>
+                  <li className="flex items-center space-x-2">
+                    <CheckCircle className="h-4 w-4 text-green-500" />
+                    <span>장르별 맞춤형 스토리</span>
+                  </li>
+                  <li className="flex items-center space-x-2">
+                    <CheckCircle className="h-4 w-4 text-green-500" />
+                    <span>실시간 수정 및 개선</span>
+                  </li>
+                </ul>
+              </CardContent>
+            </Card>
+
+            <Card className="border-0 shadow-lg hover:shadow-xl transition-all duration-300 hover:-translate-y-1">
+              <CardHeader className="text-center">
+                <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-purple-100">
+                  <Video className="h-8 w-8 text-purple-600" />
+                </div>
+                <CardTitle>스마트 편집 도구</CardTitle>
+                <CardDescription>
+                  전문적인 편집 도구와 템플릿으로 쉽고 빠른 편집이 가능합니다
+                </CardDescription>
+              </CardHeader>
+              <CardContent>
+                <ul className="space-y-3 text-sm text-slate-600">
+                  <li className="flex items-center space-x-2">
+                    <CheckCircle className="h-4 w-4 text-green-500" />
+                    <span>드래그 앤 드롭 편집</span>
+                  </li>
+                  <li className="flex items-center space-x-2">
+                    <CheckCircle className="h-4 w-4 text-green-500" />
+                    <span>1000+ 전문 템플릿</span>
+                  </li>
+                  <li className="flex items-center space-x-2">
+                    <CheckCircle className="h-4 w-4 text-green-500" />
+                    <span>자동 자막 생성</span>
+                  </li>
+                </ul>
+              </CardContent>
+            </Card>
+
+            <Card className="border-0 shadow-lg hover:shadow-xl transition-all duration-300 hover:-translate-y-1">
+              <CardHeader className="text-center">
+                <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-green-100">
+                  <Users className="h-8 w-8 text-green-600" />
+                </div>
+                <CardTitle>실시간 협업</CardTitle>
+                <CardDescription>
+                  팀원들과 실시간으로 협업하고 피드백을 주고받을 수 있습니다
+                </CardDescription>
+              </CardHeader>
+              <CardContent>
+                <ul className="space-y-3 text-sm text-slate-600">
+                  <li className="flex items-center space-x-2">
+                    <CheckCircle className="h-4 w-4 text-green-500" />
+                    <span>실시간 편집 공유</span>
+                  </li>
+                  <li className="flex items-center space-x-2">
+                    <CheckCircle className="h-4 w-4 text-green-500" />
+                    <span>댓글 및 피드백</span>
+                  </li>
+                  <li className="flex items-center space-x-2">
+                    <CheckCircle className="h-4 w-4 text-green-500" />
+                    <span>버전 관리</span>
+                  </li>
+                </ul>
+              </CardContent>
+            </Card>
+          </div>
+        </div>
+      </section>
+
+      {/* Stats Section */}
+      <section className="container mx-auto px-4 sm:px-6 lg:px-8 py-24">
+        <div className="mx-auto max-w-6xl">
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-8 text-center">
+            <div className="group">
+              <div className="text-4xl font-bold text-slate-900 mb-2 group-hover:scale-110 transition-transform duration-300">10,000+</div>
+              <div className="text-slate-600">활성 사용자</div>
+            </div>
+            <div className="group">
+              <div className="text-4xl font-bold text-slate-900 mb-2 group-hover:scale-110 transition-transform duration-300">50,000+</div>
+              <div className="text-slate-600">제작된 동영상</div>
+            </div>
+            <div className="group">
+              <div className="text-4xl font-bold text-slate-900 mb-2 group-hover:scale-110 transition-transform duration-300">95%</div>
+              <div className="text-slate-600">사용자 만족도</div>
+            </div>
+            <div className="group">
+              <div className="text-4xl font-bold text-slate-900 mb-2 group-hover:scale-110 transition-transform duration-300">24/7</div>
+              <div className="text-slate-600">AI 지원</div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* CTA Section */}
+      <section className="container mx-auto px-4 sm:px-6 lg:px-8 py-24 bg-gradient-to-r from-slate-900 to-slate-800 rounded-3xl mx-4 sm:mx-6 lg:mx-8">
+        <div className="mx-auto max-w-4xl text-center">
+          <h2 className="text-3xl font-bold tracking-tight text-white sm:text-4xl mb-6">
+            지금 바로 시작하세요
           </h2>
-          <ul className="space-y-2 text-gray-600 dark:text-gray-400">
-            <li className="flex items-center gap-2">
-              <span className="w-2 h-2 bg-blue-500 rounded-full"></span>
-              AI가 자동으로 스크립트와 스토리보드 생성
-            </li>
-            <li className="flex items-center gap-2">
-              <span className="w-2 h-2 bg-purple-500 rounded-full"></span>
-              전문적인 편집 도구와 템플릿 제공
-            </li>
-            <li className="flex items-center gap-2">
-              <span className="w-2 h-2 bg-green-500 rounded-full"></span>
-              실시간 협업 및 피드백 시스템
-            </li>
-          </ul>
+          <p className="text-lg text-slate-300 mb-10 max-w-2xl mx-auto">
+            AI의 힘으로 당신만의 독특한 동영상을 만들어보세요
+          </p>
+          <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
+            <Button size="lg" variant="secondary">
+              무료 체험하기
+            </Button>
+            <Button size="lg" variant="outline" className="border-white text-white hover:bg-white hover:text-slate-900">
+              상담 문의
+            </Button>
+          </div>
         </div>
+      </section>
 
-        <div className="flex gap-4 items-center flex-col sm:flex-row">
-          <a
-            className="rounded-full border border-solid border-transparent transition-colors flex items-center justify-center bg-foreground text-background gap-2 hover:bg-[#383838] dark:hover:bg-[#ccc] font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 sm:w-auto"
-            href="#"
-          >
-            무료로 시작하기
-          </a>
-          <a
-            className="rounded-full border border-solid border-black/[.08] dark:border-white/[.145] transition-colors flex items-center justify-center hover:bg-[#f2f2f2] dark:hover:bg-[#1a1a1a] hover:border-transparent font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 w-full sm:w-auto md:w-[158px]"
-            href="#"
-          >
-            데모 보기
-          </a>
+      {/* Footer */}
+      <footer className="container mx-auto px-4 sm:px-6 lg:px-8 py-16 border-t border-slate-200">
+        <div className="mx-auto max-w-6xl text-center">
+          <div className="mb-8">
+            <div className="flex items-center justify-center space-x-2 mb-4">
+              <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-gradient-to-r from-blue-600 to-purple-600">
+                <Video className="h-5 w-5 text-white" />
+              </div>
+              <span className="text-xl font-bold text-slate-900">Unaique</span>
+            </div>
+            <p className="text-slate-600 max-w-md mx-auto">
+              One-man Creator를 위한 AI 기반 동영상 제작 서비스
+            </p>
+          </div>
+          <div className="border-t border-slate-200 pt-8">
+            <p className="text-slate-500">&copy; 2024 Unaique. All rights reserved.</p>
+          </div>
         </div>
-      </main>
-      <footer className="row-start-3 flex gap-[24px] flex-wrap items-center justify-center">
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="#"
-        >
-          <Image
-            aria-hidden
-            src="/file.svg"
-            alt="File icon"
-            width={16}
-            height={16}
-          />
-          가이드
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="#"
-        >
-          <Image
-            aria-hidden
-            src="/window.svg"
-            alt="Window icon"
-            width={16}
-            height={16}
-          />
-          템플릿
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="#"
-        >
-          <Image
-            aria-hidden
-            src="/globe.svg"
-            alt="Globe icon"
-            width={16}
-            height={16}
-          />
-          Unaique 바로가기 →
-        </a>
       </footer>
     </div>
-  );
+  )
 }
