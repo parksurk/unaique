@@ -27,6 +27,7 @@ export default function ContactPage() {
   const [elevenLabsUrl, setElevenLabsUrl] = useState<string>("")
   const [widgetLoaded, setWidgetLoaded] = useState(false)
   const [useIframe, setUseIframe] = useState(true)
+  const [iframeError, setIframeError] = useState(false)
   const widgetRef = useRef<HTMLDivElement>(null)
 
   useEffect(() => {
@@ -84,6 +85,7 @@ export default function ContactPage() {
       script.onerror = () => {
         // If script fails to load, fallback to iframe
         setUseIframe(true)
+        setIframeError(true)
       }
       
       document.head.appendChild(script)
@@ -92,8 +94,26 @@ export default function ContactPage() {
 
   const handleIframeError = () => {
     // If iframe fails, try direct widget
+    setIframeError(true)
     setUseIframe(false)
   }
+
+  const handleIframeLoad = () => {
+    // If iframe loads successfully, reset error state
+    setIframeError(false)
+    console.log('ElevenLabs iframe loaded successfully')
+  }
+
+  // Auto-fallback if iframe has error
+  useEffect(() => {
+    if (iframeError && useIframe) {
+      const timer = setTimeout(() => {
+        setUseIframe(false)
+      }, 3000) // Wait 3 seconds before auto-fallback
+      
+      return () => clearTimeout(timer)
+    }
+  }, [iframeError, useIframe])
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100">
@@ -241,7 +261,7 @@ export default function ContactPage() {
                     className="w-full h-full border-0 rounded-lg"
                     allow="microphone; camera"
                     onError={handleIframeError}
-                    onLoad={() => console.log('ElevenLabs iframe loaded successfully')}
+                    onLoad={handleIframeLoad}
                   />
                 ) : (
                   <div ref={widgetRef} className="w-full h-full">
@@ -251,7 +271,12 @@ export default function ContactPage() {
                           <Headphones className="w-8 h-8 text-blue-600" />
                         </div>
                         <p className="text-gray-600 mb-4">
-                          {elevenLabsUrl ? 'ElevenLabs AI 음성 에이전트를 준비하고 있습니다...' : 'ElevenLabs AI 음성 에이전트를 초기화하고 있습니다...'}
+                          {iframeError 
+                            ? 'iframe 로딩에 실패했습니다. 직접 위젯을 시도합니다...' 
+                            : elevenLabsUrl 
+                              ? 'ElevenLabs AI 음성 에이전트를 준비하고 있습니다...' 
+                              : 'ElevenLabs AI 음성 에이전트를 초기화하고 있습니다...'
+                          }
                         </p>
                         <div className="w-8 h-8 mx-auto border-4 border-blue-600 border-t-transparent rounded-full animate-spin"></div>
                       </div>
@@ -264,13 +289,19 @@ export default function ContactPage() {
               {elevenLabsUrl && (
                 <div className="mt-6 text-center">
                   <p className="text-sm text-gray-600 mb-4">
-                    위젯이 로드되지 않는 경우 아래 옵션을 시도해보세요:
+                    {iframeError 
+                      ? 'iframe 로딩에 실패했습니다. 아래 옵션을 시도해보세요:' 
+                      : '위젯이 로드되지 않는 경우 아래 옵션을 시도해보세요:'
+                    }
                   </p>
                   <div className="flex flex-col sm:flex-row gap-3 justify-center">
                     <Button 
                       variant="outline" 
                       size="sm"
-                      onClick={() => setUseIframe(!useIframe)}
+                      onClick={() => {
+                        setUseIframe(!useIframe)
+                        setIframeError(false)
+                      }}
                     >
                       {useIframe ? '직접 위젯 시도' : 'iframe 시도'}
                     </Button>
@@ -290,6 +321,14 @@ export default function ContactPage() {
                       </a>
                     </Button>
                   </div>
+                  {iframeError && (
+                    <div className="mt-4 p-3 bg-yellow-50 border border-yellow-200 rounded-lg">
+                      <p className="text-sm text-yellow-800">
+                        <strong>참고:</strong> Vercel 환경에서는 iframe 제한으로 인해 로딩이 실패할 수 있습니다. 
+                        &ldquo;직접 위젯 시도&rdquo; 버튼을 클릭하거나 &ldquo;새 창에서 열기&rdquo;를 사용해보세요.
+                      </p>
+                    </div>
+                  )}
                 </div>
               )}
             </Card>

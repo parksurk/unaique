@@ -5,15 +5,19 @@
       "headers": [
         {
           "key": "Content-Security-Policy",
-          "value": "default-src 'self'; script-src 'self' 'unsafe-eval' 'unsafe-inline' https://unpkg.com https://elevenlabs.io; frame-src 'self' https://elevenlabs.io; connect-src 'self' https://elevenlabs.io; img-src 'self' data: https:; style-src 'self' 'unsafe-inline' https:; font-src 'self' data: https:;"
+          "value": "default-src 'self' https: data: 'unsafe-inline' 'unsafe-eval'; script-src 'self' 'unsafe-eval' 'unsafe-inline' https: https://unpkg.com https://elevenlabs.io https://*.elevenlabs.io; frame-src 'self' https: https://elevenlabs.io https://*.elevenlabs.io; connect-src 'self' https: https://elevenlabs.io https://*.elevenlabs.io wss:; img-src 'self' data: https: https://elevenlabs.io https://*.elevenlabs.io; style-src 'self' 'unsafe-inline' https: https://elevenlabs.io https://*.elevenlabs.io; font-src 'self' data: https: https://elevenlabs.io https://*.elevenlabs.io; object-src 'none'; base-uri 'self'; form-action 'self';"
         },
         {
           "key": "X-Frame-Options",
-          "value": "SAMEORIGIN"
+          "value": "ALLOWALL"
+        },
+        {
+          "key": "X-Content-Type-Options",
+          "value": "nosniff"
         },
         {
           "key": "Referrer-Policy",
-          "value": "strict-origin-when-cross-origin"
+          "value": "no-referrer-when-downgrade"
         }
       ]
     }
@@ -23,5 +27,10 @@
       "source": "/api/elevenlabs/:path*",
       "destination": "https://elevenlabs.io/:path*"
     }
-  ]
+  ],
+  "functions": {
+    "src/app/**/*.tsx": {
+      "maxDuration": 30
+    }
+  }
 } 
