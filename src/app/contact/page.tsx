@@ -18,12 +18,16 @@ import {
   Headphones,
   MessageSquare,
   Video,
-  Zap
+  Zap,
+  ExternalLink
 } from "lucide-react"
-import { useEffect, useState } from "react"
+import { useEffect, useState, useRef } from "react"
 
 export default function ContactPage() {
   const [elevenLabsUrl, setElevenLabsUrl] = useState<string>("")
+  const [widgetLoaded, setWidgetLoaded] = useState(false)
+  const [useIframe, setUseIframe] = useState(true)
+  const widgetRef = useRef<HTMLDivElement>(null)
 
   useEffect(() => {
     // Generate unique IDs for ElevenLabs
@@ -46,6 +50,50 @@ export default function ContactPage() {
     
     setElevenLabsUrl(`${baseUrl}?${params.toString()}`)
   }, [])
+
+  useEffect(() => {
+    // Try to load ElevenLabs widget directly if iframe fails
+    if (!useIframe && widgetRef.current && !widgetLoaded) {
+      const script = document.createElement('script')
+      script.src = 'https://unpkg.com/@elevenlabs/convai-widget-embed'
+      script.async = true
+      script.type = 'text/javascript'
+      
+      script.onload = () => {
+        if (widgetRef.current) {
+          const widget = document.createElement('elevenlabs-convai')
+          widget.setAttribute('agent-id', 'agent_5101k21dq20kffnt34dfzn5sw5tc')
+          widget.setAttribute('system-conversation-id', `conv_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`)
+          widget.setAttribute('conversation-id', `conv_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`)
+          widget.setAttribute('session-id', `session_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`)
+          widget.setAttribute('user-id', `user_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`)
+          widget.setAttribute('demo', 'false')
+          widget.setAttribute('test', 'false')
+          widget.setAttribute('mode', 'chat')
+          widget.setAttribute('theme', 'light')
+          widget.style.width = '100%'
+          widget.style.height = '500px'
+          widget.style.borderRadius = '8px'
+          
+          widgetRef.current.innerHTML = ''
+          widgetRef.current.appendChild(widget)
+          setWidgetLoaded(true)
+        }
+      }
+      
+      script.onerror = () => {
+        // If script fails to load, fallback to iframe
+        setUseIframe(true)
+      }
+      
+      document.head.appendChild(script)
+    }
+  }, [useIframe, widgetLoaded])
+
+  const handleIframeError = () => {
+    // If iframe fails, try direct widget
+    setUseIframe(false)
+  }
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100">
@@ -186,23 +234,64 @@ export default function ContactPage() {
 
               {/* ElevenLabs Widget Container */}
               <div className="w-full h-[600px] bg-gradient-to-br from-blue-50 to-indigo-100 rounded-xl border-2 border-dashed border-blue-300 flex items-center justify-center">
-                {elevenLabsUrl ? (
+                {useIframe && elevenLabsUrl ? (
                   <iframe
                     src={elevenLabsUrl}
                     title="ElevenLabs AI Voice Agent"
                     className="w-full h-full border-0 rounded-lg"
                     allow="microphone; camera"
+                    onError={handleIframeError}
+                    onLoad={() => console.log('ElevenLabs iframe loaded successfully')}
                   />
                 ) : (
-                  <div className="text-center">
-                    <div className="w-16 h-16 mx-auto bg-blue-100 rounded-full flex items-center justify-center mb-4">
-                      <Headphones className="w-8 h-8 text-blue-600" />
-                    </div>
-                    <p className="text-gray-600 mb-4">ElevenLabs AI 음성 에이전트를 준비하고 있습니다...</p>
-                    <div className="w-8 h-8 mx-auto border-4 border-blue-600 border-t-transparent rounded-full animate-spin"></div>
+                  <div ref={widgetRef} className="w-full h-full">
+                    {!widgetLoaded && (
+                      <div className="text-center">
+                        <div className="w-16 h-16 mx-auto bg-blue-100 rounded-full flex items-center justify-center mb-4">
+                          <Headphones className="w-8 h-8 text-blue-600" />
+                        </div>
+                        <p className="text-gray-600 mb-4">
+                          {elevenLabsUrl ? 'ElevenLabs AI 음성 에이전트를 준비하고 있습니다...' : 'ElevenLabs AI 음성 에이전트를 초기화하고 있습니다...'}
+                        </p>
+                        <div className="w-8 h-8 mx-auto border-4 border-blue-600 border-t-transparent rounded-full animate-spin"></div>
+                      </div>
+                    )}
                   </div>
                 )}
               </div>
+
+              {/* Fallback Options */}
+              {elevenLabsUrl && (
+                <div className="mt-6 text-center">
+                  <p className="text-sm text-gray-600 mb-4">
+                    위젯이 로드되지 않는 경우 아래 옵션을 시도해보세요:
+                  </p>
+                  <div className="flex flex-col sm:flex-row gap-3 justify-center">
+                    <Button 
+                      variant="outline" 
+                      size="sm"
+                      onClick={() => setUseIframe(!useIframe)}
+                    >
+                      {useIframe ? '직접 위젯 시도' : 'iframe 시도'}
+                    </Button>
+                    <Button 
+                      asChild 
+                      variant="outline" 
+                      size="sm"
+                    >
+                      <a 
+                        href={elevenLabsUrl} 
+                        target="_blank" 
+                        rel="noopener noreferrer"
+                        className="flex items-center gap-2"
+                      >
+                        <ExternalLink className="w-4 h-4" />
+                        새 창에서 열기
+                      </a>
+                    </Button>
+                  </div>
+                </div>
+              )}
             </Card>
           </div>
         </div>

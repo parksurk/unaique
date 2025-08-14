@@ -1,14 +1,33 @@
-import type { NextConfig } from "next";
-
-const nextConfig: NextConfig = {
-  /* config options here */
-  output: 'standalone',
+/** @type {import('next').NextConfig} */
+const nextConfig = {
   experimental: {
-    optimizePackageImports: ['lucide-react']
+    appDir: true,
   },
-  images: {
-    unoptimized: true
+  async headers() {
+    return [
+      {
+        source: '/(.*)',
+        headers: [
+          {
+            key: 'Content-Security-Policy',
+            value: "default-src 'self'; script-src 'self' 'unsafe-eval' 'unsafe-inline' https://unpkg.com https://elevenlabs.io; frame-src 'self' https://elevenlabs.io; connect-src 'self' https://elevenlabs.io; img-src 'self' data: https:; style-src 'self' 'unsafe-inline' https:; font-src 'self' data: https:;"
+          },
+          {
+            key: 'X-Frame-Options',
+            value: 'SAMEORIGIN'
+          }
+        ],
+      },
+    ]
+  },
+  async rewrites() {
+    return [
+      {
+        source: '/api/elevenlabs/:path*',
+        destination: 'https://elevenlabs.io/:path*',
+      },
+    ]
   }
-};
+}
 
-export default nextConfig;
+module.exports = nextConfig
