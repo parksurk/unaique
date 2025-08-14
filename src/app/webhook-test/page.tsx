@@ -1,6 +1,9 @@
 "use client";
 import { useState } from 'react';
 import { Button } from '@/components/ui/button';
+
+// 이 페이지는 동적으로 렌더링되어야 함 (API 호출 필요)
+export const dynamic = 'force-dynamic';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';

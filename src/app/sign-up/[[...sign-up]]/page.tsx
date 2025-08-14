@@ -4,6 +4,9 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Video, ArrowLeft } from "lucide-react";
 
+// 이 페이지는 동적으로 렌더링되어야 함 (Clerk 인증 필요)
+export const dynamic = 'force-dynamic';
+
 export default function SignUpPage() {
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100">
