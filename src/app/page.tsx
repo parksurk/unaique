@@ -1,3 +1,4 @@
+"use client";
 import Link from "next/link"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
@@ -20,8 +21,23 @@ import {
   CheckCircle,
   Headphones
 } from "lucide-react"
+import { useUser, useClerk } from "@clerk/nextjs";
+import { useRouter } from "next/navigation";
 
 export default function Home() {
+  const { isSignedIn, user, isLoaded } = useUser();
+  const { signOut } = useClerk();
+  const router = useRouter();
+
+  const handleSignOut = async () => {
+    try {
+      await signOut();
+      router.push('/');
+    } catch (error) {
+      console.error('로그아웃 중 오류 발생:', error);
+    }
+  };
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-slate-100">
       {/* Header */}
@@ -63,7 +79,7 @@ export default function Home() {
                             </p>
                           </a>
                         </NavigationMenuLink>
-        </div>
+                      </div>
                       <div className="text-sm">
                         <div className="grid grid-cols-2 gap-3">
                           <a
@@ -74,8 +90,8 @@ export default function Home() {
                             <p className="line-clamp-2 text-xs leading-snug text-muted-foreground">
                               다양한 장르별 템플릿으로 빠른 제작
                             </p>
-        </a>
-        <a
+                          </a>
+                          <a
                             className="group block select-none space-y-1 rounded-md p-3 leading-none no-underline outline-none transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground"
                             href="/pricing"
                           >
@@ -117,16 +133,45 @@ export default function Home() {
                     </Link>
                   </NavigationMenuLink>
                 </NavigationMenuItem>
+                <NavigationMenuItem>
+                  <NavigationMenuLink asChild>
+                    <Link href="/webhook-test" className={navigationMenuTriggerStyle()}>
+                      Webhook 테스트
+                    </Link>
+                  </NavigationMenuLink>
+                </NavigationMenuItem>
               </NavigationMenuList>
             </NavigationMenu>
 
             <div className="flex items-center space-x-4">
-              <Button variant="ghost" size="sm">
-                로그인
-              </Button>
-              <Button size="sm" className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700">
-                시작하기
-              </Button>
+              {isLoaded && (
+                <>
+                  {isSignedIn ? (
+                    <>
+                      <Button variant="ghost" size="sm" asChild>
+                        <Link href="/dashboard">대시보드</Link>
+                      </Button>
+                      <Button 
+                        variant="outline" 
+                        size="sm" 
+                        onClick={handleSignOut}
+                        className="hover:bg-red-50 hover:text-red-600 hover:border-red-300"
+                      >
+                        로그아웃
+                      </Button>
+                    </>
+                  ) : (
+                    <>
+                      <Button variant="ghost" size="sm" asChild>
+                        <Link href="/sign-in">로그인</Link>
+                      </Button>
+                      <Button size="sm" className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700" asChild>
+                        <Link href="/sign-up">시작하기</Link>
+                      </Button>
+                    </>
+                  )}
+                </>
+              )}
             </div>
           </div>
         </div>
@@ -155,13 +200,17 @@ export default function Home() {
           </p>
           
           <div className="mt-10 flex items-center justify-center gap-x-6">
-            <Button size="lg" className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700">
-              무료로 시작하기
-              <ArrowRight className="ml-2 h-4 w-4" />
+            <Button size="lg" className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700" asChild>
+              <Link href="/sign-up">
+                무료로 시작하기
+                <ArrowRight className="ml-2 h-4 w-4" />
+              </Link>
             </Button>
-            <Button variant="outline" size="lg">
-              <Play className="mr-2 h-4 w-4" />
-              데모 보기
+            <Button variant="outline" size="lg" asChild>
+              <Link href="/contact">
+                <Play className="mr-2 h-4 w-4" />
+                데모 보기
+              </Link>
             </Button>
           </div>
         </div>
@@ -367,11 +416,11 @@ export default function Home() {
               AI의 힘으로 당신만의 독특한 동영상을 만들어보세요
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
-              <Button size="lg" variant="secondary">
-                무료 체험하기
+              <Button size="lg" variant="secondary" asChild>
+                <Link href="/sign-up">무료 체험하기</Link>
               </Button>
-              <Button size="lg" variant="secondary">
-                상담 문의
+              <Button size="lg" variant="secondary" asChild>
+                <Link href="/contact">상담 문의</Link>
               </Button>
             </div>
           </div>
