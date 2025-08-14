@@ -28,6 +28,7 @@ export default function ContactPage() {
   const [widgetLoaded, setWidgetLoaded] = useState(false)
   const [useIframe, setUseIframe] = useState(true)
   const [iframeError, setIframeError] = useState(false)
+  const [widgetKey, setWidgetKey] = useState(0)
   const widgetRef = useRef<HTMLDivElement>(null)
 
   useEffect(() => {
@@ -54,43 +55,73 @@ export default function ContactPage() {
 
   useEffect(() => {
     // Try to load ElevenLabs widget directly if iframe fails
-    if (!useIframe && widgetRef.current && !widgetLoaded) {
-      const script = document.createElement('script')
-      script.src = 'https://unpkg.com/@elevenlabs/convai-widget-embed'
-      script.async = true
-      script.type = 'text/javascript'
-      
-      script.onload = () => {
-        if (widgetRef.current) {
-          const widget = document.createElement('elevenlabs-convai')
-          widget.setAttribute('agent-id', 'agent_5101k21dq20kffnt34dfzn5sw5tc')
-          widget.setAttribute('system-conversation-id', `conv_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`)
-          widget.setAttribute('conversation-id', `conv_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`)
-          widget.setAttribute('session-id', `session_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`)
-          widget.setAttribute('user-id', `user_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`)
-          widget.setAttribute('demo', 'false')
-          widget.setAttribute('test', 'false')
-          widget.setAttribute('mode', 'chat')
-          widget.setAttribute('theme', 'light')
-          widget.style.width = '100%'
-          widget.style.height = '500px'
-          widget.style.borderRadius = '8px'
+    if (!useIframe && !widgetLoaded) {
+      const loadWidget = async () => {
+        try {
+          // Create and load ElevenLabs script
+          const script = document.createElement('script')
+          script.src = 'https://unpkg.com/@elevenlabs/convai-widget-embed'
+          script.async = true
+          script.type = 'text/javascript'
           
-          widgetRef.current.innerHTML = ''
-          widgetRef.current.appendChild(widget)
-          setWidgetLoaded(true)
+          script.onload = () => {
+            if (widgetRef.current) {
+              createWidget()
+            }
+          }
+          
+          script.onerror = () => {
+            console.error('Failed to load ElevenLabs script')
+            setUseIframe(true)
+            setIframeError(true)
+          }
+          
+          document.head.appendChild(script)
+        } catch (error) {
+          console.error('Error loading ElevenLabs widget:', error)
+          setUseIframe(true)
+          setIframeError(true)
         }
       }
       
-      script.onerror = () => {
-        // If script fails to load, fallback to iframe
-        setUseIframe(true)
-        setIframeError(true)
-      }
-      
-      document.head.appendChild(script)
+      loadWidget()
     }
   }, [useIframe, widgetLoaded])
+
+  const createWidget = () => {
+    if (!widgetRef.current) return
+    
+    try {
+      const timestamp = Date.now()
+      const randomId = Math.random().toString(36).substr(2, 9)
+      
+      const widget = document.createElement('elevenlabs-convai')
+      widget.setAttribute('agent-id', 'agent_5101k21dq20kffnt34dfzn5sw5tc')
+      widget.setAttribute('system-conversation-id', `conv_${timestamp}_${randomId}`)
+      widget.setAttribute('conversation-id', `conv_${timestamp}_${randomId}`)
+      widget.setAttribute('session-id', `session_${timestamp}_${randomId}`)
+      widget.setAttribute('user-id', `user_${timestamp}_${randomId}`)
+      widget.setAttribute('demo', 'false')
+      widget.setAttribute('test', 'false')
+      widget.setAttribute('mode', 'chat')
+      widget.setAttribute('theme', 'light')
+      widget.style.width = '100%'
+      widget.style.height = '500px'
+      widget.style.borderRadius = '8px'
+      
+      // Clear existing content safely
+      if (widgetRef.current) {
+        widgetRef.current.innerHTML = ''
+        widgetRef.current.appendChild(widget)
+        setWidgetLoaded(true)
+        console.log('ElevenLabs widget created successfully')
+      }
+    } catch (error) {
+      console.error('Error creating widget:', error)
+      setUseIframe(true)
+      setIframeError(true)
+    }
+  }
 
   const handleIframeError = () => {
     // If iframe fails, try direct widget
@@ -102,6 +133,19 @@ export default function ContactPage() {
     // If iframe loads successfully, reset error state
     setIframeError(false)
     console.log('ElevenLabs iframe loaded successfully')
+  }
+
+  const retryWidget = () => {
+    // Reset all states and try again
+    setWidgetLoaded(false)
+    setIframeError(false)
+    setWidgetKey(prev => prev + 1) // Force re-render
+    
+    if (useIframe) {
+      setUseIframe(false)
+    } else {
+      setUseIframe(true)
+    }
   }
 
   // Auto-fallback if iframe has error
@@ -264,7 +308,11 @@ export default function ContactPage() {
                     onLoad={handleIframeLoad}
                   />
                 ) : (
-                  <div ref={widgetRef} className="w-full h-full">
+                  <div 
+                    key={widgetKey}
+                    ref={widgetRef} 
+                    className="w-full h-full"
+                  >
                     {!widgetLoaded && (
                       <div className="text-center">
                         <div className="w-16 h-16 mx-auto bg-blue-100 rounded-full flex items-center justify-center mb-4">
@@ -298,10 +346,7 @@ export default function ContactPage() {
                     <Button 
                       variant="outline" 
                       size="sm"
-                      onClick={() => {
-                        setUseIframe(!useIframe)
-                        setIframeError(false)
-                      }}
+                      onClick={retryWidget}
                     >
                       {useIframe ? '직접 위젯 시도' : 'iframe 시도'}
                     </Button>
