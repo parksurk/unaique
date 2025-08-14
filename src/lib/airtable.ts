@@ -1,6 +1,6 @@
 import Airtable from 'airtable';
 
-// Airtable 설정
+// Airtable 설정 - 지연 평가로 변경
 const getAirtableConfig = () => {
   const apiKey = process.env.AIRTABLE_API_KEY;
   const baseId = process.env.AIRTABLE_BASE_ID;
@@ -16,13 +16,20 @@ const getAirtableConfig = () => {
   return { apiKey, baseId };
 };
 
-const airtable = new Airtable({
-  apiKey: getAirtableConfig().apiKey,
-});
+// 지연 평가를 위한 함수들
+const getAirtableInstance = () => {
+  const config = getAirtableConfig();
+  return new Airtable({ apiKey: config.apiKey });
+};
 
-const baseId = getAirtableConfig().baseId;
-const base = airtable.base(baseId);
-const customersTable = base('Customers');
+const getBase = () => {
+  const config = getAirtableConfig();
+  return getAirtableInstance().base(config.baseId);
+};
+
+const getCustomersTable = () => {
+  return getBase()('Customers');
+};
 
 export interface CustomerData {
   Name: string;
@@ -49,7 +56,7 @@ export class AirtableService {
       console.log('입력 데이터:', customerData);
 
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      const record = await (customersTable.create as any)([
+      const record = await (getCustomersTable().create as any)([
         {
           fields: customerData
         }
@@ -79,7 +86,7 @@ export class AirtableService {
     try {
       console.log('Searching for customer with email:', email);
 
-      const records = await customersTable.select({
+      const records = await getCustomersTable().select({
         filterByFormula: `{Email} = '${email}'`
       }).firstPage();
 
@@ -113,7 +120,7 @@ export class AirtableService {
         return null;
       }
 
-      const records = await customersTable.select({
+      const records = await getCustomersTable().select({
         filterByFormula: `{Phone} = '${phone.trim()}'`
       }).firstPage();
 
@@ -143,7 +150,7 @@ export class AirtableService {
       console.log('Updating customer:', recordId, 'with updates:', updates);
 
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      const record = await (customersTable.update as any)([
+      const record = await (getCustomersTable().update as any)([
         {
           id: recordId,
           fields: updates
@@ -234,7 +241,7 @@ export class AirtableService {
     try {
       console.log('Testing Airtable connection...');
       
-      await customersTable.select({
+      await getCustomersTable().select({
         maxRecords: 1
       }).firstPage();
 
