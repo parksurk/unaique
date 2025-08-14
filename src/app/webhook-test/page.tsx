@@ -6,11 +6,12 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Video, TestTube, Database, CheckCircle, XCircle, Loader2 } from 'lucide-react';
+import Link from 'next/link';
 
 interface TestResult {
   success: boolean;
   message: string;
-  data?: any;
+  data?: Record<string, unknown>;
   error?: string;
   timestamp?: string;
 }
@@ -95,7 +96,7 @@ export default function WebhookTestPage() {
             
             <div className="flex items-center space-x-4">
               <Button variant="ghost" size="sm" asChild>
-                <a href="/">홈으로</a>
+                <Link href="/">홈으로</Link>
               </Button>
             </div>
           </div>
@@ -232,7 +233,9 @@ export default function WebhookTestPage() {
                     )}
                     {testResult.data && (
                       <div className="text-sm opacity-80 mt-2">
-                        <pre className="whitespace-pre-wrap">{JSON.stringify(testResult.data, null, 2)}</pre>
+                        <pre className="whitespace-pre-wrap">
+                          {JSON.stringify(testResult.data, null, 2)}
+                        </pre>
                       </div>
                     )}
                     {testResult.timestamp && (

@@ -234,7 +234,7 @@ export class AirtableService {
     try {
       console.log('Testing Airtable connection...');
       
-      const records = await customersTable.select({
+      await customersTable.select({
         maxRecords: 1
       }).firstPage();
 

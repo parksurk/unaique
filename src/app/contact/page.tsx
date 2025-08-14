@@ -12,13 +12,7 @@ import {
   HelpCircle,
   Users,
   Star,
-  CheckCircle,
-  AlertCircle,
-  Info,
   Headphones,
-  MessageSquare,
-  Video,
-  Zap,
   ExternalLink
 } from "lucide-react"
 import { useEffect, useState, useRef } from "react"
