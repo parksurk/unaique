@@ -1,6 +1,9 @@
 "use client";
 import Link from "next/link"
 import { Button } from "@/components/ui/button"
+
+// 이 페이지는 동적으로 렌더링되어야 함 (Clerk 인증 상태 확인 필요)
+export const dynamic = 'force-dynamic';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import {
   NavigationMenu,
