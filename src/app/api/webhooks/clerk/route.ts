@@ -124,10 +124,18 @@ export async function POST(req: Request) {
 
         console.log('동기화할 사용자 데이터:', userData);
 
-        const syncedCustomer = await AirtableService.syncUserToAirtable(userData);
-        console.log('✅ Airtable 동기화 성공:', syncedCustomer);
+                            const syncedCustomer = await AirtableService.syncUserToAirtable(userData);
+                    console.log('✅ Airtable 동기화 성공:', syncedCustomer);
 
-        return new Response('Customer created successfully', { status: 200 });
+                    // 세션 정보 저장을 위한 응답 헤더 추가
+                    return new Response('Customer created successfully', { 
+                      status: 200,
+                      headers: {
+                        'X-Customer-ID': syncedCustomer.id,
+                        'X-Customer-Email': syncedCustomer.fields.Email,
+                        'X-Clerk-User-ID': evt.data.id
+                      }
+                    });
       } catch (error) {
         console.error('❌ user.created 처리 중 오류:', error);
         return new Response('Error syncing user to Airtable', { status: 500 });

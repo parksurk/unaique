@@ -1,7 +1,10 @@
 "use client";
 import { useUser, useClerk } from "@clerk/nextjs";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import UnaiqueLogo from "@/components/ui/logo";
 import { Button } from "@/components/ui/button";
+import { useCustomerSession } from "@/hooks/useCustomerSession";
+import { useEffect } from "react";
 import {
   Video,
   Zap,
@@ -14,7 +17,8 @@ import {
   Mail,
   Calendar,
   LogOut,
-  Loader2
+  Loader2,
+  Phone
 } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
@@ -27,12 +31,23 @@ export default function DashboardPage() {
   const { isSignedIn, user, isLoaded } = useUser();
   const { signOut } = useClerk();
   const router = useRouter();
+  const { customerData, isLoading: sessionLoading, hasSession, isSessionValid } = useCustomerSession();
   const [isTriggeringPipeline, setIsTriggeringPipeline] = useState(false);
   const [pipelineStatus, setPipelineStatus] = useState<{
     success?: boolean;
     message?: string;
     error?: string;
   } | null>(null);
+
+  // 세션 정보 디버깅
+  useEffect(() => {
+    console.log('=== 대시보드 세션 정보 디버깅 ===');
+    console.log('customerData:', customerData);
+    console.log('sessionLoading:', sessionLoading);
+    console.log('hasSession:', hasSession);
+    console.log('isSessionValid:', isSessionValid);
+    console.log('user:', user);
+  }, [customerData, sessionLoading, hasSession, isSessionValid, user]);
 
   const handleSignOut = async () => {
     try {
@@ -128,12 +143,12 @@ export default function DashboardPage() {
       <header className="sticky top-0 z-50 w-full border-b bg-white/95 backdrop-blur supports-[backdrop-filter]:bg-white/60">
         <div className="container mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex h-16 items-center justify-between">
-            <div className="flex items-center space-x-4">
-              <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-gradient-to-r from-blue-600 to-purple-600">
-                <Video className="h-5 w-5 text-white" />
-              </div>
-              <span className="text-xl font-bold text-slate-900">Unaique</span>
-            </div>
+                                    <div className="flex items-center space-x-4">
+                          <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-gradient-to-r from-blue-600 to-purple-600">
+                            <Video className="h-5 w-5 text-white" />
+                          </div>
+                          <UnaiqueLogo size="lg" />
+                        </div>
             
             <div className="flex items-center space-x-4">
               <Button variant="ghost" size="sm" asChild>
@@ -175,22 +190,159 @@ export default function DashboardPage() {
               <CardTitle className="flex items-center gap-2">
                 <User className="w-5 h-5" />
                 사용자 정보
+                <Button 
+                  variant="outline" 
+                  size="sm" 
+                  onClick={() => {
+                    console.log('수동 새로고침 시작');
+                    window.location.reload();
+                  }}
+                  className="ml-auto text-xs"
+                  title="고객 정보 새로고침"
+                >
+                  새로고침
+                </Button>
               </CardTitle>
             </CardHeader>
-            <CardContent className="space-y-4">
-              <div className="flex items-center gap-3">
-                <Mail className="w-5 h-5 text-gray-500" />
-                <span className="text-gray-700">
-                  {user.primaryEmailAddress?.emailAddress}
-                </span>
-              </div>
-              <div className="flex items-center gap-3">
-                <Calendar className="w-5 h-5 text-gray-500" />
-                <span className="text-gray-700">
-                  가입일: {user.createdAt ? new Date(user.createdAt).toLocaleDateString('ko-KR') : '알 수 없음'}
-                </span>
-              </div>
-            </CardContent>
+                                    <CardContent className="space-y-4">
+                          {/* 로딩 상태 표시 */}
+                          {sessionLoading && (
+                            <div className="flex items-center gap-3 text-blue-600">
+                              <Loader2 className="w-5 h-5 animate-spin" />
+                              <span>고객 정보를 불러오는 중...</span>
+                            </div>
+                          )}
+                          
+                          {/* 이메일 */}
+                          <div className="flex items-center gap-3">
+                            <Mail className="w-5 h-5 text-gray-500" />
+                            <span className="text-gray-700">
+                              {customerData?.email || user.primaryEmailAddress?.emailAddress}
+                            </span>
+                          </div>
+                          
+                          {/* 이름 */}
+                          <div className="flex items-center gap-3">
+                            <User className="w-5 h-5 text-gray-500" />
+                            <span className="text-gray-700">
+                              이름: {customerData?.name || user.firstName || user.lastName || '알 수 없음'}
+                            </span>
+                          </div>
+                          
+                          {/* Airtable Record ID (시스템 고유값) */}
+                          <div className="flex items-center gap-3">
+                            <div className="w-5 h-5 bg-blue-100 rounded flex items-center justify-center">
+                              <span className="text-blue-600 text-xs font-mono">RID</span>
+                            </div>
+                            <span className="text-gray-700 font-mono text-sm" title="Airtable 시스템 고유값 (불변)">
+                              {customerData?.recordId || '알 수 없음'}
+                            </span>
+                          </div>
+                          
+                          {/* 비즈니스 ID (사용자 정의) */}
+                          {customerData?.businessId && (
+                            <div className="flex items-center gap-3">
+                              <div className="w-5 h-5 bg-green-100 rounded flex items-center justify-center">
+                                <span className="text-green-600 text-xs font-mono">BID</span>
+                              </div>
+                            <span className="text-gray-700 font-mono text-sm" title="비즈니스 식별값 (변경 가능)">
+                              {customerData.businessId}
+                            </span>
+                          </div>
+                          )}
+                          
+                          {/* Clerk 사용자 ID */}
+                          <div className="flex items-center gap-3">
+                            <div className="w-5 h-5 bg-purple-100 rounded flex items-center justify-center">
+                              <span className="text-purple-600 text-xs font-mono">UID</span>
+                            </div>
+                            <span className="text-gray-700 font-mono text-sm">
+                              {customerData?.clerkId || user.id || '알 수 없음'}
+                            </span>
+                          </div>
+                          
+                          {/* 전화번호 */}
+                          <div className="flex items-center gap-3">
+                            <Phone className="w-5 h-5 text-gray-500" />
+                            <span className="text-gray-700">
+                              전화번호: {customerData?.phone || '미입력'}
+                            </span>
+                          </div>
+                          
+                          {/* 등급 */}
+                          <div className="flex items-center gap-3">
+                            <Star className="w-5 h-5 text-gray-500" />
+                            <span className="text-gray-700">
+                              등급: {customerData?.tier || '일반'}
+                            </span>
+                          </div>
+                          
+                          {/* 선호 카테고리 */}
+                          <div className="flex items-center gap-3">
+                            <Video className="w-5 h-5 text-gray-500" />
+                            <span className="text-gray-700">
+                              선호 카테고리: {customerData?.favoriteCategory || '없음'}
+                            </span>
+                          </div>
+                          
+                          {/* 가입일 */}
+                          <div className="flex items-center gap-3">
+                            <Calendar className="w-5 h-5 text-gray-500" />
+                            <span className="text-gray-700">
+                              가입일: {user.createdAt ? new Date(user.createdAt).toLocaleDateString('ko-KR') : '알 수 없음'}
+                            </span>
+                          </div>
+                          
+                          {/* 세션 상태 정보 (디버깅용) */}
+                          {process.env.NODE_ENV === 'development' && (
+                            <div className="mt-4 p-3 bg-gray-100 rounded-lg text-xs text-gray-600">
+                              <div className="flex items-center gap-2">
+                                <strong>세션 상태:</strong> 
+                                <span className={`px-2 py-1 rounded text-xs font-medium ${
+                                  hasSession ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'
+                                }`}>
+                                  {hasSession ? '✅ 있음' : '❌ 없음'}
+                                </span>
+                              </div>
+                              <div className="flex items-center gap-2">
+                                <strong>세션 유효성:</strong> 
+                                <span className={`px-2 py-1 rounded text-xs font-medium ${
+                                  isSessionValid ? 'bg-green-100 text-green-800' : 'bg-yellow-100 text-yellow-800'
+                                }`}>
+                                  {isSessionValid ? '✅ 유효' : '⚠️ 만료'}
+                                </span>
+                              </div>
+                              <div className="flex items-center gap-2">
+                                <strong>로딩 상태:</strong> 
+                                <span className={`px-2 py-1 rounded text-xs font-medium ${
+                                  sessionLoading ? 'bg-blue-100 text-blue-800' : 'bg-gray-100 text-gray-800'
+                                }`}>
+                                  {sessionLoading ? '🔄 로딩 중' : '✅ 완료'}
+                                </span>
+                              </div>
+                              {customerData && (
+                                <div className="mt-2 pt-2 border-t border-gray-200">
+                                  <div className="text-xs text-gray-500">
+                                    <strong>세션 데이터:</strong> {customerData.name} ({customerData.recordId})
+                                  </div>
+                                </div>
+                              )}
+                            </div>
+                          )}
+                          
+                          {/* 세션 정보가 없을 때 안내 메시지 */}
+                          {!sessionLoading && !customerData && (
+                            <div className="mt-4 p-3 bg-yellow-50 border border-yellow-200 rounded-lg">
+                              <div className="text-yellow-800 text-sm">
+                                <strong>⚠️ 고객 정보를 불러올 수 없습니다</strong>
+                                <p className="mt-1 text-xs">
+                                  Airtable에서 고객 정보를 가져오는 중 문제가 발생했습니다. 
+                                  새로고침 버튼을 클릭하거나 잠시 후 다시 시도해주세요.
+                                </p>
+                              </div>
+                            </div>
+                          )}
+                        </CardContent>
           </Card>
         </div>
       </section>

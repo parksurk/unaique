@@ -7,6 +7,7 @@ import { Label } from '@/components/ui/label';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Video, TestTube, Database, CheckCircle, XCircle, Loader2 } from 'lucide-react';
 import Link from 'next/link';
+import UnaiqueLogo from '@/components/ui/logo';
 
 // 이 페이지는 동적으로 렌더링되어야 함 (API 호출 필요)
 export const dynamic = 'force-dynamic';
@@ -90,12 +91,12 @@ export default function WebhookTestPage() {
       <header className="sticky top-0 z-50 w-full border-b bg-white/95 backdrop-blur supports-[backdrop-filter]:bg-white/60">
         <div className="container mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex h-16 items-center justify-between">
-            <div className="flex items-center space-x-4">
-              <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-gradient-to-r from-blue-600 to-purple-600">
-                <Video className="h-5 w-5 text-white" />
-              </div>
-              <span className="text-xl font-bold text-slate-900">Unaique</span>
-            </div>
+                                    <div className="flex items-center space-x-4">
+                          <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-gradient-to-r from-blue-600 to-purple-600">
+                            <Video className="h-5 w-5 text-white" />
+                          </div>
+                          <UnaiqueLogo size="lg" />
+                        </div>
             
             <div className="flex items-center space-x-4">
               <Button variant="ghost" size="sm" asChild>

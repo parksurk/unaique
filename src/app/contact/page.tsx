@@ -3,6 +3,15 @@
 import Link from "next/link"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
+import {
+  NavigationMenu,
+  NavigationMenuContent,
+  NavigationMenuItem,
+  NavigationMenuLink,
+  NavigationMenuList,
+  NavigationMenuTrigger,
+  navigationMenuTriggerStyle,
+} from "@/components/ui/navigation-menu"
 import { 
   Phone, 
   Mail, 
@@ -16,6 +25,7 @@ import {
   ExternalLink
 } from "lucide-react"
 import { useEffect, useState, useRef } from "react"
+import UnaiqueLogo from "@/components/ui/logo"
 
 export default function ContactPage() {
   const [elevenLabsUrl, setElevenLabsUrl] = useState<string>("")
@@ -155,6 +165,118 @@ export default function ContactPage() {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100">
+      {/* Header */}
+      <header className="sticky top-0 z-50 w-full border-b bg-white/95 backdrop-blur supports-[backdrop-filter]:bg-white/60">
+        <div className="container mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="flex h-16 items-center justify-between">
+            <div className="flex items-center space-x-4">
+              <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-gradient-to-r from-blue-600 to-purple-600">
+                <Phone className="h-5 w-5 text-white" />
+              </div>
+              <UnaiqueLogo size="lg" />
+            </div>
+
+            <NavigationMenu className="hidden md:flex">
+              <NavigationMenuList>
+                <NavigationMenuItem>
+                  <NavigationMenuLink asChild>
+                    <Link href="/" className={navigationMenuTriggerStyle()}>
+                      홈
+                    </Link>
+                  </NavigationMenuLink>
+                </NavigationMenuItem>
+                <NavigationMenuItem>
+                  <NavigationMenuTrigger>서비스</NavigationMenuTrigger>
+                  <NavigationMenuContent>
+                    <div className="grid gap-3 p-6 w-[400px] lg:w-[500px] lg:grid-cols-[.75fr_1fr]">
+                      <div className="row-span-3">
+                        <NavigationMenuLink asChild>
+                          <a
+                            className="flex h-full w-full select-none flex-col justify-end rounded-md bg-gradient-to-b from-muted/50 to-muted p-6 no-underline outline-none focus:shadow-md"
+                            href="/features"
+                          >
+                            <Phone className="h-6 w-6" />
+                            <div className="mb-2 mt-4 text-lg font-medium">
+                              AI 동영상 제작
+                            </div>
+                            <p className="text-sm leading-tight text-muted-foreground">
+                              생성형 AI로 전문적인 동영상을 쉽게 제작하세요.
+                            </p>
+                          </a>
+                        </NavigationMenuLink>
+                      </div>
+                      <div className="text-sm">
+                        <div className="grid grid-cols-2 gap-3">
+                          <a
+                            className="group block select-none space-y-1 rounded-md p-3 leading-none no-underline outline-none transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground"
+                            href="/templates"
+                          >
+                            <div className="text-sm font-medium leading-none">템플릿</div>
+                            <p className="line-clamp-2 text-xs leading-snug text-muted-foreground">
+                              다양한 장르별 템플릿으로 빠른 제작
+                            </p>
+                          </a>
+                          <a
+                            className="group block select-none space-y-1 rounded-md p-3 leading-none no-underline outline-none transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground"
+                            href="/pricing"
+                          >
+                            <div className="text-sm font-medium leading-none">가격</div>
+                            <p className="line-clamp-2 text-xs leading-snug text-muted-foreground">
+                              합리적인 가격으로 시작하세요
+                            </p>
+                          </a>
+                        </div>
+                      </div>
+                    </div>
+                  </NavigationMenuContent>
+                </NavigationMenuItem>
+                <NavigationMenuItem>
+                  <NavigationMenuLink asChild>
+                    <Link href="/features" className={navigationMenuTriggerStyle()}>
+                      기능
+                    </Link>
+                  </NavigationMenuLink>
+                </NavigationMenuItem>
+                <NavigationMenuItem>
+                  <NavigationMenuLink asChild>
+                    <Link href="/templates" className={navigationMenuTriggerStyle()}>
+                      템플릿
+                    </Link>
+                  </NavigationMenuLink>
+                </NavigationMenuItem>
+                <NavigationMenuItem>
+                  <NavigationMenuLink asChild>
+                    <Link href="/pricing" className={navigationMenuTriggerStyle()}>
+                      가격
+                    </Link>
+                  </NavigationMenuLink>
+                </NavigationMenuItem>
+                <NavigationMenuItem>
+                  <NavigationMenuLink asChild>
+                    <Link href="/contact" className={navigationMenuTriggerStyle()}>
+                      문의
+                    </Link>
+                  </NavigationMenuLink>
+                </NavigationMenuItem>
+                <NavigationMenuItem>
+                  <NavigationMenuLink asChild>
+                    <Link href="/webhook-test" className={navigationMenuTriggerStyle()}>
+                      Webhook 테스트
+                    </Link>
+                  </NavigationMenuLink>
+                </NavigationMenuItem>
+              </NavigationMenuList>
+            </NavigationMenu>
+
+            <div className="flex items-center space-x-4">
+              <Button variant="ghost" size="sm" asChild>
+                <Link href="/">홈으로</Link>
+              </Button>
+            </div>
+          </div>
+        </div>
+      </header>
+
       {/* Hero Section */}
       <section className="relative overflow-hidden bg-gradient-to-r from-blue-600 via-blue-700 to-indigo-800 text-white py-20">
         <div className="absolute inset-0 bg-black/20"></div>

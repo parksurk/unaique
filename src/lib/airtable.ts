@@ -31,7 +31,12 @@ const getCustomersTable = () => {
   return getBase()('Customers');
 };
 
+const getTemplatesTable = () => {
+  return getBase()('Templates');
+};
+
 export interface CustomerData {
+  ID?: string;             // 비즈니스 ID (직접 만든 필드, 변경 가능)
   Name: string;
   Phone?: string;
   Email: string;
@@ -39,6 +44,18 @@ export interface CustomerData {
   'Total Purchases'?: number;
   'Purchase Count'?: number;
   'Favorite Category'?: string;
+  [key: string]: unknown; // 인덱스 시그니처 추가
+}
+
+export interface TemplateData {
+  Category: string;        // 템플릿 카테고리 (교육, 마케팅, 엔터테인먼트, 비즈니스)
+  Name: string;            // 템플릿 이름
+  Desc: string;            // 템플릿 설명
+  아이디어: string;        // 주요 기능 및 아이디어
+  Duration?: string;       // 영상 길이
+  Difficulty?: string;     // 난이도
+  Thumbnail?: string;      // 썸네일 이모지
+  [key: string]: unknown;  // 인덱스 시그니처 추가
 }
 
 export interface AirtableCustomerRecord {
@@ -250,6 +267,135 @@ export class AirtableService {
     } catch (error) {
       console.error('Airtable connection failed:', error);
       return false;
+    }
+  }
+
+  /**
+   * 이메일로 고객 정보를 완전히 조회 (세션 저장용)
+   */
+  static async getCustomerForSession(email: string): Promise<AirtableCustomerRecord | null> {
+    try {
+      console.log('Getting customer data for session:', email);
+
+      const records = await getCustomersTable().select({
+        filterByFormula: `{Email} = '${email}'`
+      }).firstPage();
+
+      if (records && records.length > 0) {
+        const customer = {
+          id: records[0].id,
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
+          fields: records[0].fields as any
+        };
+        console.log('Customer data retrieved for session:', customer);
+        return customer;
+      }
+
+      console.log('No customer found for session with email:', email);
+      return null;
+    } catch (error) {
+      console.error('Error getting customer data for session:', error);
+      return null;
+    }
+  }
+
+  /**
+   * 템플릿 데이터 일괄 추가 (Airtable 제한: 한 번에 최대 10개)
+   */
+  static async addTemplates(templates: TemplateData[]): Promise<boolean> {
+    try {
+      console.log('=== 템플릿 일괄 추가 시작 ===');
+      console.log('추가할 템플릿 수:', templates.length);
+      console.log('첫 번째 템플릿 샘플:', templates[0]);
+
+      // Airtable 연결 테스트
+      console.log('Airtable 연결 테스트 중...');
+      const connectionTest = await this.testConnection();
+      if (!connectionTest) {
+        throw new Error('Airtable 연결 실패');
+      }
+      console.log('✅ Airtable 연결 성공');
+
+      // Templates 테이블 존재 확인
+      console.log('Templates 테이블 접근 테스트 중...');
+      try {
+        await getTemplatesTable().select({ maxRecords: 1 }).firstPage();
+        console.log('✅ Templates 테이블 접근 성공');
+      } catch (tableError) {
+        console.error('❌ Templates 테이블 접근 실패:', tableError);
+        throw new Error(`Templates 테이블 접근 실패: ${tableError instanceof Error ? tableError.message : 'Unknown error'}`);
+      }
+
+      // Airtable 제한: 한 번에 최대 10개 레코드 생성 가능
+      const BATCH_SIZE = 10;
+      const totalTemplates = templates.length;
+      let successCount = 0;
+
+      console.log(`배치 크기: ${BATCH_SIZE}, 총 템플릿: ${totalTemplates}`);
+
+      // 템플릿을 배치로 나누어 처리
+      for (let i = 0; i < totalTemplates; i += BATCH_SIZE) {
+        const batch = templates.slice(i, i + BATCH_SIZE);
+        const batchNumber = Math.floor(i / BATCH_SIZE) + 1;
+        const totalBatches = Math.ceil(totalTemplates / BATCH_SIZE);
+        
+        console.log(`배치 ${batchNumber}/${totalBatches} 처리 중... (${batch.length}개)`);
+
+        // 템플릿 데이터 변환
+        const templateRecords = batch.map(template => ({
+          fields: template
+        }));
+
+        // 배치별 템플릿 생성
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        const records = await (getTemplatesTable().create as any)(templateRecords);
+
+        if (records && records.length > 0) {
+          successCount += records.length;
+          console.log(`✅ 배치 ${batchNumber} 성공: ${records.length}개 추가됨`);
+        } else {
+          throw new Error(`배치 ${batchNumber} 실패: 레코드가 반환되지 않음`);
+        }
+
+        // 마지막 배치가 아니면 잠시 대기 (API 제한 방지)
+        if (i + BATCH_SIZE < totalTemplates) {
+          console.log('다음 배치를 위해 1초 대기...');
+          await new Promise(resolve => setTimeout(resolve, 1000));
+        }
+      }
+
+      console.log(`✅ 모든 배치 완료: 총 ${successCount}개 템플릿 추가 성공`);
+      return true;
+
+    } catch (error) {
+      console.error('❌ 템플릿 일괄 추가 실패:', error);
+      if (error instanceof Error) {
+        console.error('오류 메시지:', error.message);
+        console.error('오류 스택:', error.stack);
+      }
+      return false;
+    }
+  }
+
+  /**
+   * 모든 템플릿 조회
+   */
+  static async getAllTemplates(): Promise<unknown[]> {
+    try {
+      console.log('=== 모든 템플릿 조회 ===');
+
+      const records = await getTemplatesTable().select().all();
+      
+      if (records && records.length > 0) {
+        console.log('✅ 템플릿 조회 성공:', records.length, '개');
+        return Array.from(records);
+      }
+
+      console.log('템플릿이 없습니다.');
+      return [];
+    } catch (error) {
+      console.error('❌ 템플릿 조회 실패:', error);
+      return [];
     }
   }
 } 

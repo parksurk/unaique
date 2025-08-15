@@ -1,6 +1,9 @@
-import Link from "next/link"
-import { Button } from "@/components/ui/button"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
+"use client";
+
+import { useState, useEffect } from 'react';
+import Link from "next/link";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { 
   Video, 
   Sparkles, 
@@ -16,124 +19,115 @@ import {
   Clock,
   Globe,
   Shield,
-  Star
-} from "lucide-react"
+  Loader2,
+  XCircle
+} from "lucide-react";
+
+interface TemplateData {
+  id: string;
+  fields: {
+    Category: string;
+    Name: string;
+    Desc: string;
+    아이디어: string;
+    Duration?: string;
+    Difficulty?: string;
+    Thumbnail?: string;
+  };
+}
+
+interface TemplateCategory {
+  name: string;
+  icon: React.ComponentType<{ className?: string }>;
+  description: string;
+  templates: TemplateData[];
+}
 
 export default function TemplatesPage() {
-  const templateCategories = [
-    {
-      name: "교육",
-      icon: BookOpen,
-      description: "학습과 지식 공유를 위한 전문적인 교육 영상 템플릿",
-      templates: [
-        {
-          title: "온라인 강의",
-          duration: "10-15분",
-          difficulty: "초급",
-          features: ["자막 자동 생성", "퀴즈 삽입", "진도 표시"],
-          thumbnail: "📚"
-        },
-        {
-          title: "튜토리얼",
-          duration: "5-8분",
-          difficulty: "초급",
-          features: ["단계별 가이드", "화면 녹화", "요약 슬라이드"],
-          thumbnail: "🎯"
-        },
-        {
-          title: "프레젠테이션",
-          duration: "15-20분",
-          difficulty: "중급",
-          features: ["전문적 디자인", "차트 삽입", "브랜딩 요소"],
-          thumbnail: "📊"
+  const [templateCategories, setTemplateCategories] = useState<TemplateCategory[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
+  // Airtable에서 템플릿 데이터 조회
+  useEffect(() => {
+    const fetchTemplates = async () => {
+      try {
+        setIsLoading(true);
+        setError(null);
+
+        const response = await fetch('/api/templates/add', {
+          method: 'GET',
+        });
+
+        if (!response.ok) {
+          throw new Error('템플릿 데이터를 불러올 수 없습니다.');
         }
-      ]
-    },
-    {
-      name: "마케팅",
-      icon: TrendingUp,
-      description: "브랜드 홍보와 제품 소개를 위한 매력적인 마케팅 영상 템플릿",
-      templates: [
-        {
-          title: "제품 소개",
-          duration: "2-3분",
-          difficulty: "초급",
-          features: ["제품 하이라이트", "CTA 버튼", "소셜 미디어 최적화"],
-          thumbnail: "🛍️"
-        },
-        {
-          title: "브랜드 스토리",
-          duration: "3-5분",
-          difficulty: "중급",
-          features: ["감정적 스토리텔링", "브랜드 컬러", "음악 동기화"],
-          thumbnail: "💫"
-        },
-        {
-          title: "광고",
-          duration: "15-30초",
-          difficulty: "고급",
-          features: ["빠른 컷 편집", "시선 집중 효과", "강력한 메시지"],
-          thumbnail: "🎬"
+
+        const data = await response.json();
+        
+        if (data.success && data.templates) {
+          // 템플릿 데이터를 카테고리별로 그룹화
+          const groupedTemplates = groupTemplatesByCategory(data.templates);
+          setTemplateCategories(groupedTemplates);
+        } else {
+          throw new Error(data.message || '템플릿 데이터가 없습니다.');
         }
-      ]
-    },
-    {
-      name: "엔터테인먼트",
-      icon: Music,
-      description: "재미있고 매력적인 콘텐츠를 위한 엔터테인먼트 영상 템플릿",
-      templates: [
-        {
-          title: "브이로그",
-          duration: "5-10분",
-          difficulty: "초급",
-          features: ["자연스러운 편집", "음악 오버레이", "자막 효과"],
-          thumbnail: "📱"
-        },
-        {
-          title: "게임 하이라이트",
-          duration: "3-5분",
-          difficulty: "중급",
-          features: ["액션 시퀀스", "게임 UI 오버레이", "긴장감 조성"],
-          thumbnail: "🎮"
-        },
-        {
-          title: "음악 비디오",
-          duration: "3-4분",
-          difficulty: "고급",
-          features: ["비트 동기화", "시각적 효과", "색상 그라데이션"],
-          thumbnail: "🎵"
-        }
-      ]
-    },
-    {
-      name: "비즈니스",
-      icon: Target,
-      description: "전문적이고 신뢰감 있는 비즈니스 콘텐츠를 위한 템플릿",
-      templates: [
-        {
-          title: "회사 소개",
-          duration: "2-3분",
-          difficulty: "중급",
-          features: ["로고 애니메이션", "팀 소개", "성과 지표"],
-          thumbnail: "🏢"
-        },
-        {
-          title: "회의 녹화",
-          duration: "30-60분",
-          difficulty: "초급",
-          features: ["화자 표시", "주제별 챕터", "검색 가능한 자막"],
-          thumbnail: "💼"
-        },
-        {
-          title: "투자 피치",
-          duration: "5-7분",
-          difficulty: "고급",
-          features: ["데이터 시각화", "전문적 그래픽", "신뢰감 있는 톤"],
-          thumbnail: "📈"
-        }
-      ]
-    }
-  ]
+      } catch (err) {
+        console.error('템플릿 조회 오류:', err);
+        setError(err instanceof Error ? err.message : '알 수 없는 오류가 발생했습니다.');
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    fetchTemplates();
+  }, []);
+
+  // 템플릿을 카테고리별로 그룹화하는 함수
+  const groupTemplatesByCategory = (templates: TemplateData[]): TemplateCategory[] => {
+    const categoryMap = new Map<string, TemplateData[]>();
+    
+    // 각 템플릿을 카테고리별로 분류
+    templates.forEach(template => {
+      const category = template.fields.Category;
+      if (!categoryMap.has(category)) {
+        categoryMap.set(category, []);
+      }
+      categoryMap.get(category)!.push(template);
+    });
+
+    // 카테고리별 설명과 아이콘 매핑
+    const categoryConfig = {
+      '교육': {
+        icon: BookOpen,
+        description: '학습과 지식 공유를 위한 전문적인 교육 영상 템플릿'
+      },
+      '마케팅': {
+        icon: TrendingUp,
+        description: '브랜드 홍보와 제품 소개를 위한 매력적인 마케팅 영상 템플릿'
+      },
+      '엔터테인먼트': {
+        icon: Music,
+        description: '재미있고 매력적인 콘텐츠를 위한 엔터테인먼트 영상 템플릿'
+      },
+      '비즈니스': {
+        icon: Target,
+        description: '전문적이고 신뢰감 있는 비즈니스 콘텐츠를 위한 템플릿'
+      }
+    };
+
+    // 카테고리별로 정렬된 배열 생성
+    const orderedCategories = ['교육', '마케팅', '엔터테인먼트', '비즈니스'];
+    
+    return orderedCategories
+      .filter(category => categoryMap.has(category))
+      .map(category => ({
+        name: category,
+        icon: categoryConfig[category as keyof typeof categoryConfig]?.icon || Target,
+        description: categoryConfig[category as keyof typeof categoryConfig]?.description || '',
+        templates: categoryMap.get(category) || []
+      }));
+  };
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-slate-100">
@@ -208,63 +202,99 @@ export default function TemplatesPage() {
             </p>
           </div>
           
-          <div className="space-y-16">
-            {templateCategories.map((category) => (
-              <div key={category.name}>
-                <div className="flex items-center space-x-3 mb-8">
-                  <div className="flex h-12 w-12 items-center justify-center rounded-lg bg-gradient-to-r from-blue-500 to-purple-600">
-                    <category.icon className="h-6 w-6 text-white" />
-                  </div>
-                  <div>
-                    <h3 className="text-2xl font-bold text-slate-900">{category.name}</h3>
-                    <p className="text-slate-600">{category.description}</p>
-                  </div>
+          {/* 로딩 상태 */}
+          {isLoading && (
+            <div className="text-center py-12">
+              <Loader2 className="w-12 h-12 animate-spin text-blue-600 mx-auto mb-4" />
+              <p className="text-lg text-slate-600">템플릿을 불러오는 중...</p>
+            </div>
+          )}
+
+          {/* 오류 상태 */}
+          {error && (
+            <div className="text-center py-12">
+              <div className="bg-red-50 border border-red-200 rounded-lg p-6 max-w-md mx-auto">
+                <div className="text-red-600 mb-2">
+                  <XCircle className="w-8 h-8 mx-auto" />
                 </div>
-                
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                  {category.templates.map((template, templateIndex) => (
-                    <Card key={templateIndex} className="border-0 shadow-lg hover:shadow-xl transition-all duration-300 hover:-translate-y-1 group">
-                      <CardHeader className="pb-4">
-                        <div className="flex items-center justify-between mb-3">
-                          <span className="text-3xl">{template.thumbnail}</span>
-                          <div className="flex items-center space-x-2">
-                            <span className="text-xs bg-blue-100 text-blue-700 px-2 py-1 rounded-full">
-                              {template.difficulty}
-                            </span>
-                            <span className="text-xs bg-gray-100 text-gray-700 px-2 py-1 rounded-full">
-                              {template.duration}
-                            </span>
-                          </div>
-                        </div>
-                        <CardTitle className="text-lg">{template.title}</CardTitle>
-                        <CardDescription>
-                          {category.name} 분야에 특화된 전문 템플릿
-                        </CardDescription>
-                      </CardHeader>
-                      <CardContent className="pt-0">
-                        <ul className="space-y-2 mb-6">
-                          {template.features.map((feature, featureIndex) => (
-                            <li key={featureIndex} className="flex items-center space-x-2 text-sm text-slate-600">
-                              <CheckCircle className="h-4 w-4 text-green-500" />
-                              <span>{feature}</span>
-                            </li>
-                          ))}
-                        </ul>
-                        <div className="flex space-x-2">
-                          <Button size="sm" className="flex-1 bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700">
-                            사용하기
-                          </Button>
-                          <Button size="sm" variant="outline">
-                            <Heart className="h-4 w-4" />
-                          </Button>
-                        </div>
-                      </CardContent>
-                    </Card>
-                  ))}
-                </div>
+                <h3 className="text-lg font-medium text-red-800 mb-2">템플릿 로드 실패</h3>
+                <p className="text-sm text-red-700 mb-4">{error}</p>
+                <Button 
+                  onClick={() => window.location.reload()} 
+                  variant="outline" 
+                  size="sm"
+                  className="border-red-200 text-red-700 hover:bg-red-50"
+                >
+                  다시 시도
+                </Button>
               </div>
-            ))}
-          </div>
+            </div>
+          )}
+
+          {/* 템플릿 카테고리 표시 */}
+          {!isLoading && !error && (
+            <div className="space-y-16">
+              {templateCategories.map((category) => (
+                <div key={category.name}>
+                  <div className="flex items-center space-x-3 mb-8">
+                    <div className="flex h-12 w-12 items-center justify-center rounded-lg bg-gradient-to-r from-blue-500 to-purple-600">
+                      <category.icon className="h-6 w-6 text-white" />
+                    </div>
+                    <div>
+                      <h3 className="text-2xl font-bold text-slate-900">{category.name}</h3>
+                      <p className="text-slate-600">{category.description}</p>
+                    </div>
+                  </div>
+                  
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                    {category.templates.map((template, templateIndex) => (
+                      <Card key={template.id || templateIndex} className="border-0 shadow-lg hover:shadow-xl transition-all duration-300 hover:-translate-y-1 group">
+                        <CardHeader className="pb-4">
+                          <div className="flex items-center justify-between mb-3">
+                            <span className="text-3xl">{template.fields.Thumbnail || '🎬'}</span>
+                            <div className="flex items-center space-x-2">
+                              {template.fields.Difficulty && (
+                                <span className="text-xs bg-blue-100 text-blue-700 px-2 py-1 rounded-full">
+                                  {template.fields.Difficulty}
+                                </span>
+                              )}
+                              {template.fields.Duration && (
+                                <span className="text-xs bg-gray-100 text-gray-700 px-2 py-1 rounded-full">
+                                  {template.fields.Duration}
+                                </span>
+                              )}
+                            </div>
+                          </div>
+                          <CardTitle className="text-lg">{template.fields.Name}</CardTitle>
+                          <CardDescription>
+                            {template.fields.Desc || `${category.name} 분야에 특화된 전문 템플릿`}
+                          </CardDescription>
+                        </CardHeader>
+                        <CardContent className="pt-0">
+                          <ul className="space-y-2 mb-6">
+                            {template.fields.아이디어.split(',').map((feature, featureIndex) => (
+                              <li key={featureIndex} className="flex items-center space-x-2 text-sm text-slate-600">
+                                <CheckCircle className="h-4 w-4 text-green-500" />
+                                <span>{feature.trim()}</span>
+                              </li>
+                            ))}
+                          </ul>
+                          <div className="flex space-x-2">
+                            <Button size="sm" className="flex-1 bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700">
+                              사용하기
+                            </Button>
+                            <Button size="sm" variant="outline">
+                              <Heart className="h-4 w-4" />
+                            </Button>
+                          </div>
+                        </CardContent>
+                      </Card>
+                    ))}
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
         </div>
       </section>
 
@@ -345,58 +375,6 @@ export default function TemplatesPage() {
         </div>
       </section>
 
-      {/* Template Gallery */}
-      <section className="container mx-auto px-4 sm:px-6 lg:px-8 py-24">
-        <div className="mx-auto max-w-6xl">
-          <div className="text-center mb-16">
-            <h2 className="text-3xl font-bold tracking-tight text-slate-900 sm:text-4xl mb-6">
-              인기 템플릿 갤러리
-            </h2>
-            <p className="text-lg text-slate-600 max-w-3xl mx-auto">
-              사용자들이 가장 많이 선택한 인기 템플릿들을 
-              미리보기로 확인해보세요.
-            </p>
-          </div>
-          
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-            {[
-              { title: "유튜브 썸네일", category: "마케팅", views: "12.5K", rating: 4.9, thumbnail: "🎨" },
-              { title: "온라인 강의", category: "교육", views: "8.9K", rating: 4.8, thumbnail: "📚" },
-              { title: "브랜드 스토리", category: "비즈니스", views: "6.7K", rating: 4.7, thumbnail: "💼" },
-              { title: "게임 하이라이트", category: "엔터테인먼트", views: "15.2K", rating: 4.9, thumbnail: "🎮" },
-              { title: "제품 리뷰", category: "마케팅", views: "9.3K", rating: 4.6, thumbnail: "📱" },
-              { title: "회사 소개", category: "비즈니스", views: "7.1K", rating: 4.8, thumbnail: "🏢" }
-            ].map((template, index) => (
-              <Card key={index} className="border-0 shadow-lg hover:shadow-xl transition-all duration-300 hover:-translate-y-1 group cursor-pointer">
-                <CardHeader className="pb-4">
-                  <div className="relative">
-                    <div className="w-full h-32 bg-gradient-to-br from-blue-100 to-purple-100 rounded-lg flex items-center justify-center text-4xl mb-3">
-                      {template.thumbnail}
-                    </div>
-                    <div className="absolute top-2 right-2 bg-white/90 backdrop-blur-sm rounded-full px-2 py-1 text-xs font-medium text-slate-700">
-                      {template.category}
-                    </div>
-                  </div>
-                  <CardTitle className="text-lg">{template.title}</CardTitle>
-                </CardHeader>
-                <CardContent className="pt-0">
-                  <div className="flex items-center justify-between mb-4">
-                    <div className="flex items-center space-x-1">
-                      <Star className="h-4 w-4 text-yellow-500 fill-current" />
-                      <span className="text-sm font-medium">{template.rating}</span>
-                    </div>
-                    <span className="text-sm text-slate-500">{template.views} 사용</span>
-                  </div>
-                  <Button className="w-full bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700">
-                    미리보기
-                  </Button>
-                </CardContent>
-              </Card>
-            ))}
-          </div>
-        </div>
-      </section>
-
       {/* CTA Section */}
       <section className="container mx-auto px-4 sm:px-6 lg:px-8 py-24">
         <div className="mx-auto max-w-4xl text-center">
@@ -445,5 +423,5 @@ export default function TemplatesPage() {
         </div>
       </footer>
     </div>
-  )
+  );
 } 
