@@ -1,8 +1,5 @@
 "use client";
 import { useUser, useClerk } from "@clerk/nextjs";
-
-// 이 페이지는 동적으로 렌더링되어야 함 (Clerk 인증 필요)
-export const dynamic = 'force-dynamic';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import {
@@ -22,6 +19,9 @@ import {
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
+
+// 이 페이지는 동적으로 렌더링되어야 함 (Clerk 인증 필요)
+export const dynamic = 'force-dynamic';
 
 export default function DashboardPage() {
   const { isSignedIn, user, isLoaded } = useUser();

@@ -1,15 +1,15 @@
 "use client";
 import { useState } from 'react';
 import { Button } from '@/components/ui/button';
-
-// 이 페이지는 동적으로 렌더링되어야 함 (API 호출 필요)
-export const dynamic = 'force-dynamic';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Video, TestTube, Database, CheckCircle, XCircle, Loader2 } from 'lucide-react';
 import Link from 'next/link';
+
+// 이 페이지는 동적으로 렌더링되어야 함 (API 호출 필요)
+export const dynamic = 'force-dynamic';
 
 interface TestResult {
   success: boolean;
