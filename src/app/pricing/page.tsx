@@ -5,7 +5,7 @@ import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 
-import { Check, X, Star, Zap, Crown, Building, Calculator, Info, ArrowRight, CreditCard, Clock, Shield, Users, Database, Download, Sparkles, Video, Music, Globe } from "lucide-react";
+import { Check, X, Star, Zap, Crown, Building, ArrowRight, CreditCard, Clock, Sparkles, Video, Music, Globe } from "lucide-react";
 import UnaiqueLogo from "@/components/ui/logo";
 
 interface PricingPlan {
@@ -123,7 +123,7 @@ const pricingPlans: PricingPlan[] = [
 
 export default function PricingPage() {
   const [isAnnual, setIsAnnual] = useState(false);
-  const [selectedPlan, setSelectedPlan] = useState<string | null>(null);
+
 
   const getPrice = (plan: PricingPlan) => {
     return isAnnual ? plan.annualPrice : plan.price;
@@ -309,7 +309,7 @@ export default function PricingPage() {
                     ) : (
                       <Button 
                         className="w-full bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700"
-                        onClick={() => setSelectedPlan(plan.name)}
+      
                       >
                         {plan.price === "₩0" ? "무료로 시작" : "플랜 선택"}
                       </Button>

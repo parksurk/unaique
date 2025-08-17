@@ -32,12 +32,7 @@ export default function DashboardPage() {
   const { signOut } = useClerk();
   const router = useRouter();
   const { customerData, isLoading: sessionLoading, hasSession, isSessionValid } = useCustomerSession();
-  const [isTriggeringPipeline, setIsTriggeringPipeline] = useState(false);
-  const [pipelineStatus, setPipelineStatus] = useState<{
-    success?: boolean;
-    message?: string;
-    error?: string;
-  } | null>(null);
+
 
   // 세션 정보 디버깅
   useEffect(() => {
@@ -58,56 +53,7 @@ export default function DashboardPage() {
     }
   };
 
-  const handleCreateVideo = async () => {
-    setIsTriggeringPipeline(true);
-    setPipelineStatus(null);
 
-    try {
-      console.log('n8n 파이프라인 트리거 시작...');
-      
-      const response = await fetch('/api/n8n/trigger-pipeline', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          pipelineName: 'Unaique-VG-Pipeline',
-          additionalData: {
-            userEmail: user?.primaryEmailAddress?.emailAddress,
-            userName: `${user?.firstName || ''} ${user?.lastName || ''}`.trim(),
-            action: 'create_video',
-            projectType: 'new_video'
-          }
-        }),
-      });
-
-      const result = await response.json();
-      
-      if (result.success) {
-        setPipelineStatus({
-          success: true,
-          message: result.message
-        });
-        console.log('✅ n8n 파이프라인 트리거 성공:', result);
-      } else {
-        setPipelineStatus({
-          success: false,
-          message: result.message,
-          error: result.error
-        });
-        console.error('❌ n8n 파이프라인 트리거 실패:', result);
-      }
-    } catch (error) {
-      setPipelineStatus({
-        success: false,
-        message: '파이프라인 트리거 중 오류가 발생했습니다',
-        error: error instanceof Error ? error.message : 'Unknown error'
-      });
-      console.error('❌ n8n 파이프라인 트리거 중 오류:', error);
-    } finally {
-      setIsTriggeringPipeline(false);
-    }
-  };
 
   if (!isLoaded) {
     return (
@@ -362,36 +308,15 @@ export default function DashboardPage() {
                   AI를 사용하여 새로운 비디오를 제작하세요
                 </CardDescription>
               </CardHeader>
-              <CardContent className="space-y-4">
-                {pipelineStatus && (
-                  <div className={`p-3 rounded-lg text-sm ${
-                    pipelineStatus.success 
-                      ? 'bg-green-100 text-green-800 border border-green-200' 
-                      : 'bg-red-100 text-red-800 border border-red-200'
-                  }`}>
-                    <div className="font-medium">{pipelineStatus.message}</div>
-                    {pipelineStatus.error && (
-                      <div className="text-xs opacity-80 mt-1">오류: {pipelineStatus.error}</div>
-                    )}
-                  </div>
-                )}
-                <Button 
-                  className="w-full" 
-                  onClick={handleCreateVideo}
-                  disabled={isTriggeringPipeline}
-                >
-                  {isTriggeringPipeline ? (
-                    <>
-                      <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                      파이프라인 실행 중...
-                    </>
-                  ) : (
-                    <>
-                      시작하기
-                      <ArrowRight className="ml-2 h-4 w-4" />
-                    </>
-                  )}
-                </Button>
+              <CardContent>
+                <Link href="/create-video" className="w-full">
+                  <Button 
+                    className="w-full bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700"
+                  >
+                    시작하기
+                    <ArrowRight className="ml-2 h-4 w-4" />
+                  </Button>
+                </Link>
               </CardContent>
             </Card>
 
@@ -406,10 +331,12 @@ export default function DashboardPage() {
                 </CardDescription>
               </CardHeader>
               <CardContent>
-                <Button variant="outline" className="w-full">
-                  보기
-                  <ArrowRight className="w-4 h-4 ml-2" />
-                </Button>
+                <Link href="/projects" className="w-full">
+                  <Button variant="outline" className="w-full">
+                    보기
+                    <ArrowRight className="w-4 h-4 ml-2" />
+                  </Button>
+                </Link>
               </CardContent>
             </Card>
 

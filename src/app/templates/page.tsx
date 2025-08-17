@@ -280,9 +280,11 @@ export default function TemplatesPage() {
                             ))}
                           </ul>
                           <div className="flex space-x-2">
-                            <Button size="sm" className="flex-1 bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700">
-                              사용하기
-                            </Button>
+                            <Link href={`/create-video?templateId=${template.id}`} className="flex-1">
+                              <Button size="sm" className="w-full bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700">
+                                사용하기
+                              </Button>
+                            </Link>
                             <Button size="sm" variant="outline">
                               <Heart className="h-4 w-4" />
                             </Button>
