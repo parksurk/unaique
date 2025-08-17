@@ -5,10 +5,21 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Button } from '@/components/ui/button';
 
 import { Alert, AlertDescription } from '@/components/ui/alert';
-import { Loader2, Video, Calendar, Clock, Play, X, ExternalLink, ArrowLeft } from 'lucide-react';
+import { Loader2, Video, Calendar, Clock, Play, X, ExternalLink, ArrowLeft, LogOut } from 'lucide-react';
 import { UnaiqueLogo } from '@/components/ui/logo';
+import {
+  NavigationMenu,
+  NavigationMenuContent,
+  NavigationMenuItem,
+  NavigationMenuLink,
+  NavigationMenuList,
+  NavigationMenuTrigger,
+  navigationMenuTriggerStyle,
+} from '@/components/ui/navigation-menu';
 import Link from 'next/link';
 import { useCustomerSession } from '@/hooks/useCustomerSession';
+import { useClerk } from '@clerk/nextjs';
+import { useRouter } from 'next/navigation';
 
 export const dynamic = 'force-dynamic';
 
@@ -30,6 +41,8 @@ interface Project {
 
 export default function ProjectsPage() {
   const { customerData, isLoading } = useCustomerSession();
+  const { signOut } = useClerk();
+  const router = useRouter();
   const [projects, setProjects] = useState<Project[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -57,6 +70,16 @@ export default function ProjectsPage() {
       setLoading(false);
     }
   }, [customerData?.businessId]);
+
+  // 로그아웃 처리
+  const handleSignOut = async () => {
+    try {
+      await signOut();
+      router.push('/');
+    } catch (error) {
+      console.error('로그아웃 중 오류 발생:', error);
+    }
+  };
 
   // 프로젝트 취소
   const handleCancelProject = async (orderNumber: number) => {
@@ -149,23 +172,65 @@ export default function ProjectsPage() {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100">
-      {/* Header */}
-      <header className="bg-white shadow-sm border-b">
-        <div className="container mx-auto px-4 py-4">
-          <div className="flex items-center justify-between">
+            {/* Header */}
+      <header className="sticky top-0 z-50 w-full border-b bg-white/95 backdrop-blur supports-[backdrop-filter]:bg-white/60">
+        <div className="container mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="flex h-16 items-center justify-between">
             <div className="flex items-center space-x-4">
-              <UnaiqueLogo />
-              <nav className="hidden md:flex space-x-8">
-                <Link href="/" className="text-gray-600 hover:text-gray-900">홈</Link>
-                <Link href="/templates" className="text-gray-600 hover:text-gray-900">템플릿</Link>
-                <Link href="/pricing" className="text-gray-600 hover:text-gray-900">가격</Link>
-                <Link href="/contact" className="text-gray-600 hover:text-gray-900">문의</Link>
-              </nav>
-            </div>
-            <div className="flex items-center space-x-4">
-              <Link href="/dashboard">
-                <Button variant="outline">대시보드</Button>
+              <Link href="/" className="flex items-center space-x-4">
+                <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-gradient-to-r from-blue-600 to-purple-600">
+                  <Video className="h-5 w-5 text-white" />
+                </div>
+                <UnaiqueLogo size="lg" />
               </Link>
+            </div>
+
+            <NavigationMenu className="hidden md:flex">
+              <NavigationMenuList>
+                <NavigationMenuItem>
+                  <NavigationMenuLink asChild>
+                    <Link href="/" className={navigationMenuTriggerStyle()}>
+                      홈
+                    </Link>
+                  </NavigationMenuLink>
+                </NavigationMenuItem>
+                <NavigationMenuItem>
+                  <NavigationMenuLink asChild>
+                    <Link href="/templates" className={navigationMenuTriggerStyle()}>
+                      템플릿
+                    </Link>
+                  </NavigationMenuLink>
+                </NavigationMenuItem>
+                <NavigationMenuItem>
+                  <NavigationMenuLink asChild>
+                    <Link href="/pricing" className={navigationMenuTriggerStyle()}>
+                      가격
+                    </Link>
+                  </NavigationMenuLink>
+                </NavigationMenuItem>
+                <NavigationMenuItem>
+                  <NavigationMenuLink asChild>
+                    <Link href="/contact" className={navigationMenuTriggerStyle()}>
+                      문의
+                    </Link>
+                  </NavigationMenuLink>
+                </NavigationMenuItem>
+              </NavigationMenuList>
+            </NavigationMenu>
+
+            <div className="flex items-center space-x-4">
+              <Button variant="ghost" size="sm" asChild>
+                <Link href="/dashboard">대시보드</Link>
+              </Button>
+              <Button 
+                variant="outline" 
+                size="sm" 
+                onClick={handleSignOut}
+                className="hover:bg-red-50 hover:text-red-600 hover:border-red-300"
+              >
+                <LogOut className="mr-2 h-4 w-4" />
+                로그아웃
+              </Button>
             </div>
           </div>
         </div>

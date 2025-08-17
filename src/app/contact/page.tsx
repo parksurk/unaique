@@ -22,18 +22,34 @@ import {
   Users,
   Star,
   Headphones,
-  ExternalLink
+  ExternalLink,
+  Video
 } from "lucide-react"
 import { useEffect, useState, useRef } from "react"
 import UnaiqueLogo from "@/components/ui/logo"
+import { useClerk, useUser } from '@clerk/nextjs';
+import { useRouter } from 'next/navigation';
 
 export default function ContactPage() {
+  const { isSignedIn, isLoaded } = useUser();
+  const { signOut } = useClerk();
+  const router = useRouter();
   const [elevenLabsUrl, setElevenLabsUrl] = useState<string>("")
   const [widgetLoaded, setWidgetLoaded] = useState(false)
   const [useIframe, setUseIframe] = useState(true)
   const [iframeError, setIframeError] = useState(false)
   const [widgetKey, setWidgetKey] = useState(0)
   const widgetRef = useRef<HTMLDivElement>(null)
+
+  // 로그아웃 처리
+  const handleSignOut = async () => {
+    try {
+      await signOut();
+      router.push('/');
+    } catch (error) {
+      console.error('로그아웃 중 오류 발생:', error);
+    }
+  };
 
   useEffect(() => {
     // Generate unique IDs for ElevenLabs
@@ -170,10 +186,12 @@ export default function ContactPage() {
         <div className="container mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex h-16 items-center justify-between">
             <div className="flex items-center space-x-4">
-              <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-gradient-to-r from-blue-600 to-purple-600">
-                <Phone className="h-5 w-5 text-white" />
-              </div>
-              <UnaiqueLogo size="lg" />
+              <Link href="/" className="flex items-center space-x-4">
+                <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-gradient-to-r from-blue-600 to-purple-600">
+                  <Video className="h-5 w-5 text-white" />
+                </div>
+                <UnaiqueLogo size="lg" />
+              </Link>
             </div>
 
             <NavigationMenu className="hidden md:flex">
@@ -182,58 +200,6 @@ export default function ContactPage() {
                   <NavigationMenuLink asChild>
                     <Link href="/" className={navigationMenuTriggerStyle()}>
                       홈
-                    </Link>
-                  </NavigationMenuLink>
-                </NavigationMenuItem>
-                <NavigationMenuItem>
-                  <NavigationMenuTrigger>서비스</NavigationMenuTrigger>
-                  <NavigationMenuContent>
-                    <div className="grid gap-3 p-6 w-[400px] lg:w-[500px] lg:grid-cols-[.75fr_1fr]">
-                      <div className="row-span-3">
-                        <NavigationMenuLink asChild>
-                          <a
-                            className="flex h-full w-full select-none flex-col justify-end rounded-md bg-gradient-to-b from-muted/50 to-muted p-6 no-underline outline-none focus:shadow-md"
-                            href="/features"
-                          >
-                            <Phone className="h-6 w-6" />
-                            <div className="mb-2 mt-4 text-lg font-medium">
-                              AI 동영상 제작
-                            </div>
-                            <p className="text-sm leading-tight text-muted-foreground">
-                              생성형 AI로 전문적인 동영상을 쉽게 제작하세요.
-                            </p>
-                          </a>
-                        </NavigationMenuLink>
-                      </div>
-                      <div className="text-sm">
-                        <div className="grid grid-cols-2 gap-3">
-                          <a
-                            className="group block select-none space-y-1 rounded-md p-3 leading-none no-underline outline-none transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground"
-                            href="/templates"
-                          >
-                            <div className="text-sm font-medium leading-none">템플릿</div>
-                            <p className="line-clamp-2 text-xs leading-snug text-muted-foreground">
-                              다양한 장르별 템플릿으로 빠른 제작
-                            </p>
-                          </a>
-                          <a
-                            className="group block select-none space-y-1 rounded-md p-3 leading-none no-underline outline-none transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground"
-                            href="/pricing"
-                          >
-                            <div className="text-sm font-medium leading-none">가격</div>
-                            <p className="line-clamp-2 text-xs leading-snug text-muted-foreground">
-                              합리적인 가격으로 시작하세요
-                            </p>
-                          </a>
-                        </div>
-                      </div>
-                    </div>
-                  </NavigationMenuContent>
-                </NavigationMenuItem>
-                <NavigationMenuItem>
-                  <NavigationMenuLink asChild>
-                    <Link href="/features" className={navigationMenuTriggerStyle()}>
-                      기능
                     </Link>
                   </NavigationMenuLink>
                 </NavigationMenuItem>
@@ -258,20 +224,38 @@ export default function ContactPage() {
                     </Link>
                   </NavigationMenuLink>
                 </NavigationMenuItem>
-                <NavigationMenuItem>
-                  <NavigationMenuLink asChild>
-                    <Link href="/webhook-test" className={navigationMenuTriggerStyle()}>
-                      Webhook 테스트
-                    </Link>
-                  </NavigationMenuLink>
-                </NavigationMenuItem>
               </NavigationMenuList>
             </NavigationMenu>
 
             <div className="flex items-center space-x-4">
-              <Button variant="ghost" size="sm" asChild>
-                <Link href="/">홈으로</Link>
-              </Button>
+              {isLoaded && (
+                <>
+                  {isSignedIn ? (
+                    <>
+                      <Button variant="ghost" size="sm" asChild>
+                        <Link href="/dashboard">대시보드</Link>
+                      </Button>
+                      <Button 
+                        variant="outline" 
+                        size="sm" 
+                        onClick={handleSignOut}
+                        className="hover:bg-red-50 hover:text-red-600 hover:border-red-300"
+                      >
+                        로그아웃
+                      </Button>
+                    </>
+                  ) : (
+                    <>
+                      <Button variant="ghost" size="sm" asChild>
+                        <Link href="/sign-in">로그인</Link>
+                      </Button>
+                      <Button size="sm" className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700" asChild>
+                        <Link href="/sign-up">시작하기</Link>
+                      </Button>
+                    </>
+                  )}
+                </>
+              )}
             </div>
           </div>
         </div>

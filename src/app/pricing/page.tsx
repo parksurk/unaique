@@ -2,10 +2,21 @@
 
 import { useState } from 'react';
 import Link from "next/link";
+import { useClerk, useUser } from '@clerk/nextjs';
+import { useRouter } from 'next/navigation';
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  NavigationMenu,
+  NavigationMenuContent,
+  NavigationMenuItem,
+  NavigationMenuLink,
+  NavigationMenuList,
+  NavigationMenuTrigger,
+  navigationMenuTriggerStyle,
+} from "@/components/ui/navigation-menu";
 
-import { Check, X, Star, Zap, Crown, Building, ArrowRight, CreditCard, Clock, Sparkles, Video, Music, Globe } from "lucide-react";
+import { Check, X, Star, Zap, Crown, Building, ArrowRight, CreditCard, Clock, Sparkles, Video, Music, Globe, LogOut } from "lucide-react";
 import UnaiqueLogo from "@/components/ui/logo";
 
 interface PricingPlan {
@@ -122,8 +133,20 @@ const pricingPlans: PricingPlan[] = [
 ];
 
 export default function PricingPage() {
+  const { isSignedIn, isLoaded } = useUser();
+  const { signOut } = useClerk();
+  const router = useRouter();
   const [isAnnual, setIsAnnual] = useState(false);
 
+  // 로그아웃 처리
+  const handleSignOut = async () => {
+    try {
+      await signOut();
+      router.push('/');
+    } catch (error) {
+      console.error('로그아웃 중 오류 발생:', error);
+    }
+  };
 
   const getPrice = (plan: PricingPlan) => {
     return isAnnual ? plan.annualPrice : plan.price;
@@ -144,19 +167,76 @@ export default function PricingPage() {
         <div className="container mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex h-16 items-center justify-between">
             <div className="flex items-center space-x-4">
-              <Link href="/" className="flex items-center space-x-2">
+              <Link href="/" className="flex items-center space-x-4">
                 <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-gradient-to-r from-blue-600 to-purple-600">
                   <Video className="h-5 w-5 text-white" />
                 </div>
                 <UnaiqueLogo size="lg" />
               </Link>
             </div>
+
+            <NavigationMenu className="hidden md:flex">
+              <NavigationMenuList>
+                <NavigationMenuItem>
+                  <NavigationMenuLink asChild>
+                    <Link href="/" className={navigationMenuTriggerStyle()}>
+                      홈
+                    </Link>
+                  </NavigationMenuLink>
+                </NavigationMenuItem>
+                <NavigationMenuItem>
+                  <NavigationMenuLink asChild>
+                    <Link href="/templates" className={navigationMenuTriggerStyle()}>
+                      템플릿
+                    </Link>
+                  </NavigationMenuLink>
+                </NavigationMenuItem>
+                <NavigationMenuItem>
+                  <NavigationMenuLink asChild>
+                    <Link href="/pricing" className={navigationMenuTriggerStyle()}>
+                      가격
+                    </Link>
+                  </NavigationMenuLink>
+                </NavigationMenuItem>
+                <NavigationMenuItem>
+                  <NavigationMenuLink asChild>
+                    <Link href="/contact" className={navigationMenuTriggerStyle()}>
+                      문의
+                    </Link>
+                  </NavigationMenuLink>
+                </NavigationMenuItem>
+              </NavigationMenuList>
+            </NavigationMenu>
+
             <div className="flex items-center space-x-4">
-              <Link href="/">
-                <Button variant="ghost" size="sm">
-                  ← 홈으로 돌아가기
-                </Button>
-              </Link>
+              {isLoaded && (
+                <>
+                  {isSignedIn ? (
+                    <>
+                      <Button variant="ghost" size="sm" asChild>
+                        <Link href="/dashboard">대시보드</Link>
+                      </Button>
+                      <Button 
+                        variant="outline" 
+                        size="sm" 
+                        onClick={handleSignOut}
+                        className="hover:bg-red-50 hover:text-red-600 hover:border-red-300"
+                      >
+                        로그아웃
+                      </Button>
+                    </>
+                  ) : (
+                    <>
+                      <Button variant="ghost" size="sm" asChild>
+                        <Link href="/sign-in">로그인</Link>
+                      </Button>
+                      <Button size="sm" className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700" asChild>
+                        <Link href="/sign-up">시작하기</Link>
+                      </Button>
+                    </>
+                  )}
+                </>
+              )}
             </div>
           </div>
         </div>

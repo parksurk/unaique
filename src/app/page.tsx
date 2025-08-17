@@ -49,10 +49,12 @@ export default function Home() {
         <div className="container mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex h-16 items-center justify-between">
                                     <div className="flex items-center space-x-4">
+                                                  <Link href="/" className="flex items-center space-x-4">
                           <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-gradient-to-r from-blue-600 to-purple-600">
                             <Video className="h-5 w-5 text-white" />
                           </div>
                           <UnaiqueLogo size="lg" />
+                        </Link>
                         </div>
 
             <NavigationMenu className="hidden md:flex">
@@ -61,58 +63,6 @@ export default function Home() {
                   <NavigationMenuLink asChild>
                     <Link href="/" className={navigationMenuTriggerStyle()}>
                       홈
-                    </Link>
-                  </NavigationMenuLink>
-                </NavigationMenuItem>
-                <NavigationMenuItem>
-                  <NavigationMenuTrigger>서비스</NavigationMenuTrigger>
-                  <NavigationMenuContent>
-                    <div className="grid gap-3 p-6 w-[400px] lg:w-[500px] lg:grid-cols-[.75fr_1fr]">
-                      <div className="row-span-3">
-                        <NavigationMenuLink asChild>
-                          <a
-                            className="flex h-full w-full select-none flex-col justify-end rounded-md bg-gradient-to-b from-muted/50 to-muted p-6 no-underline outline-none focus:shadow-md"
-                            href="/features"
-                          >
-                            <Video className="h-6 w-6" />
-                            <div className="mb-2 mt-4 text-lg font-medium">
-                              AI 동영상 제작
-                            </div>
-                            <p className="text-sm leading-tight text-muted-foreground">
-                              생성형 AI로 전문적인 동영상을 쉽게 제작하세요.
-                            </p>
-                          </a>
-                        </NavigationMenuLink>
-                      </div>
-                      <div className="text-sm">
-                        <div className="grid grid-cols-2 gap-3">
-                          <a
-                            className="group block select-none space-y-1 rounded-md p-3 leading-none no-underline outline-none transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground"
-                            href="/templates"
-                          >
-                            <div className="text-sm font-medium leading-none">템플릿</div>
-                            <p className="line-clamp-2 text-xs leading-snug text-muted-foreground">
-                              다양한 장르별 템플릿으로 빠른 제작
-                            </p>
-                          </a>
-                          <a
-                            className="group block select-none space-y-1 rounded-md p-3 leading-none no-underline outline-none transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground"
-                            href="/pricing"
-                          >
-                            <div className="text-sm font-medium leading-none">가격</div>
-                            <p className="line-clamp-2 text-xs leading-snug text-muted-foreground">
-                              합리적인 가격으로 시작하세요
-                            </p>
-                          </a>
-                        </div>
-                      </div>
-                    </div>
-                  </NavigationMenuContent>
-                </NavigationMenuItem>
-                <NavigationMenuItem>
-                  <NavigationMenuLink asChild>
-                    <Link href="/features" className={navigationMenuTriggerStyle()}>
-                      기능
                     </Link>
                   </NavigationMenuLink>
                 </NavigationMenuItem>
@@ -134,13 +84,6 @@ export default function Home() {
                   <NavigationMenuLink asChild>
                     <Link href="/contact" className={navigationMenuTriggerStyle()}>
                       문의
-                    </Link>
-                  </NavigationMenuLink>
-                </NavigationMenuItem>
-                <NavigationMenuItem>
-                  <NavigationMenuLink asChild>
-                    <Link href="/webhook-test" className={navigationMenuTriggerStyle()}>
-                      Webhook 테스트
                     </Link>
                   </NavigationMenuLink>
                 </NavigationMenuItem>

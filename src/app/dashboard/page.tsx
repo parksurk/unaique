@@ -3,6 +3,15 @@ import { useUser, useClerk } from "@clerk/nextjs";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import UnaiqueLogo from "@/components/ui/logo";
 import { Button } from "@/components/ui/button";
+import {
+  NavigationMenu,
+  NavigationMenuContent,
+  NavigationMenuItem,
+  NavigationMenuLink,
+  NavigationMenuList,
+  NavigationMenuTrigger,
+  navigationMenuTriggerStyle,
+} from "@/components/ui/navigation-menu";
 import { useCustomerSession } from "@/hooks/useCustomerSession";
 import { useEffect } from "react";
 import {
@@ -90,15 +99,50 @@ export default function DashboardPage() {
         <div className="container mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex h-16 items-center justify-between">
                                     <div className="flex items-center space-x-4">
-                          <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-gradient-to-r from-blue-600 to-purple-600">
-                            <Video className="h-5 w-5 text-white" />
-                          </div>
-                          <UnaiqueLogo size="lg" />
+                          <Link href="/" className="flex items-center space-x-4">
+                            <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-gradient-to-r from-blue-600 to-purple-600">
+                              <Video className="h-5 w-5 text-white" />
+                            </div>
+                            <UnaiqueLogo size="lg" />
+                          </Link>
                         </div>
             
+            <NavigationMenu className="hidden md:flex">
+              <NavigationMenuList>
+                <NavigationMenuItem>
+                  <NavigationMenuLink asChild>
+                    <Link href="/" className={navigationMenuTriggerStyle()}>
+                      홈
+                    </Link>
+                  </NavigationMenuLink>
+                </NavigationMenuItem>
+                <NavigationMenuItem>
+                  <NavigationMenuLink asChild>
+                    <Link href="/templates" className={navigationMenuTriggerStyle()}>
+                      템플릿
+                    </Link>
+                  </NavigationMenuLink>
+                </NavigationMenuItem>
+                <NavigationMenuItem>
+                  <NavigationMenuLink asChild>
+                    <Link href="/pricing" className={navigationMenuTriggerStyle()}>
+                      가격
+                    </Link>
+                  </NavigationMenuLink>
+                </NavigationMenuItem>
+                <NavigationMenuItem>
+                  <NavigationMenuLink asChild>
+                    <Link href="/contact" className={navigationMenuTriggerStyle()}>
+                      문의
+                    </Link>
+                  </NavigationMenuLink>
+                </NavigationMenuItem>
+              </NavigationMenuList>
+            </NavigationMenu>
+
             <div className="flex items-center space-x-4">
               <Button variant="ghost" size="sm" asChild>
-                <Link href="/">홈으로</Link>
+                <Link href="/dashboard">대시보드</Link>
               </Button>
               <Button 
                 variant="outline" 
