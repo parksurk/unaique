@@ -14,11 +14,9 @@ import Link from 'next/link';
 import { useCustomerSession } from '@/hooks/useCustomerSession';
 import {
   NavigationMenu,
-  NavigationMenuContent,
   NavigationMenuItem,
   NavigationMenuLink,
   NavigationMenuList,
-  NavigationMenuTrigger,
   navigationMenuTriggerStyle,
 } from '@/components/ui/navigation-menu';
 

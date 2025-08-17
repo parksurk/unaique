@@ -31,7 +31,7 @@ const getCustomersTable = () => {
   return getBase()('Customers');
 };
 
-const getTemplatesTable = () => {
+export const getTemplatesTable = () => {
   return getBase()('Templates');
 };
 
@@ -63,6 +63,7 @@ export interface TemplateData {
   Duration?: string;       // 영상 길이
   Difficulty?: string;     // 난이도
   Thumbnail?: string;      // 썸네일 이모지
+  like?: number;           // 좋아요 수
   [key: string]: unknown;  // 인덱스 시그니처 추가
 }
 
@@ -425,6 +426,40 @@ export class AirtableService {
     } catch (error) {
       console.error('❌ 템플릿 조회 실패:', error);
       return [];
+    }
+  }
+
+  /**
+   * 템플릿 업데이트
+   */
+  static async updateTemplate(templateId: string, updates: Partial<TemplateData>): Promise<{ id: string; fields: TemplateData }> {
+    try {
+      console.log('=== 템플릿 업데이트 시작 ===');
+      console.log('템플릿 ID:', templateId);
+      console.log('업데이트 데이터:', updates);
+
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const record = await (getTemplatesTable().update as any)([
+        {
+          id: templateId,
+          fields: updates
+        }
+      ]);
+
+      if (record && record.length > 0) {
+        const updatedRecord = {
+          id: record[0].id,
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
+          fields: record[0].fields as TemplateData
+        };
+        console.log('✅ 템플릿 업데이트 성공:', updatedRecord);
+        return updatedRecord;
+      }
+
+      throw new Error('Failed to update template record');
+    } catch (error) {
+      console.error('❌ 템플릿 업데이트 실패:', error);
+      throw error;
     }
   }
 

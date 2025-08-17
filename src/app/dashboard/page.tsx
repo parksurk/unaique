@@ -5,11 +5,9 @@ import UnaiqueLogo from "@/components/ui/logo";
 import { Button } from "@/components/ui/button";
 import {
   NavigationMenu,
-  NavigationMenuContent,
   NavigationMenuItem,
   NavigationMenuLink,
   NavigationMenuList,
-  NavigationMenuTrigger,
   navigationMenuTriggerStyle,
 } from "@/components/ui/navigation-menu";
 import { useCustomerSession } from "@/hooks/useCustomerSession";
@@ -31,7 +29,7 @@ import {
 } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { useState } from "react";
+
 
 // 이 페이지는 동적으로 렌더링되어야 함 (Clerk 인증 필요)
 export const dynamic = 'force-dynamic';

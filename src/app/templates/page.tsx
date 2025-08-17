@@ -9,11 +9,9 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import UnaiqueLogo from "@/components/ui/logo";
 import {
   NavigationMenu,
-  NavigationMenuContent,
   NavigationMenuItem,
   NavigationMenuLink,
   NavigationMenuList,
-  NavigationMenuTrigger,
   navigationMenuTriggerStyle,
 } from "@/components/ui/navigation-menu";
 import { 
@@ -32,8 +30,7 @@ import {
   Globe,
   Shield,
   Loader2,
-  XCircle,
-  LogOut
+  XCircle
 } from "lucide-react";
 
 interface TemplateData {
@@ -46,6 +43,7 @@ interface TemplateData {
     Duration?: string;
     Difficulty?: string;
     Thumbnail?: string;
+    like?: number; // 추가된 필드
   };
 }
 
@@ -106,6 +104,63 @@ export default function TemplatesPage() {
       router.push('/');
     } catch (error) {
       console.error('로그아웃 중 오류 발생:', error);
+    }
+  };
+
+  // 좋아요 처리
+  const handleLike = async (templateId: string) => {
+    try {
+      const response = await fetch('/api/templates/like', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ templateId }),
+      });
+
+      if (!response.ok) {
+        throw new Error('좋아요 업데이트에 실패했습니다.');
+      }
+
+      const data = await response.json();
+      
+      if (data.success) {
+        // 템플릿 목록 새로고침
+        const fetchTemplates = async () => {
+          try {
+            setIsLoading(true);
+            setError(null);
+
+            const response = await fetch('/api/templates/add', {
+              method: 'GET',
+            });
+
+            if (!response.ok) {
+              throw new Error('템플릿 데이터를 불러올 수 없습니다.');
+            }
+
+            const data = await response.json();
+            
+            if (data.success && data.templates) {
+              // 템플릿 데이터를 카테고리별로 그룹화
+              const groupedTemplates = groupTemplatesByCategory(data.templates);
+              setTemplateCategories(groupedTemplates);
+            } else {
+              throw new Error(data.message || '템플릿 데이터가 없습니다.');
+            }
+          } catch (err) {
+            console.error('템플릿 조회 오류:', err);
+            setError(err instanceof Error ? err.message : '알 수 없는 오류가 발생했습니다.');
+          } finally {
+            setIsLoading(false);
+          }
+        };
+
+        fetchTemplates();
+      }
+    } catch (error) {
+      console.error('좋아요 처리 실패:', error);
+      alert('좋아요 처리에 실패했습니다.');
     }
   };
 
@@ -368,8 +423,16 @@ export default function TemplatesPage() {
                                 사용하기
                               </Button>
                             </Link>
-                            <Button size="sm" variant="outline">
+                            <Button 
+                              size="sm" 
+                              variant="outline"
+                              onClick={() => handleLike(template.id)}
+                              className="flex items-center space-x-2 hover:bg-red-50 hover:text-red-600 hover:border-red-300"
+                            >
                               <Heart className="h-4 w-4" />
+                              <span className="text-sm font-medium">
+                                {template.fields.like || 0}
+                              </span>
                             </Button>
                           </div>
                         </CardContent>

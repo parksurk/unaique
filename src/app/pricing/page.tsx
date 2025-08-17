@@ -8,15 +8,13 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import {
   NavigationMenu,
-  NavigationMenuContent,
   NavigationMenuItem,
   NavigationMenuLink,
   NavigationMenuList,
-  NavigationMenuTrigger,
   navigationMenuTriggerStyle,
 } from "@/components/ui/navigation-menu";
 
-import { Check, X, Star, Zap, Crown, Building, ArrowRight, CreditCard, Clock, Sparkles, Video, Music, Globe, LogOut } from "lucide-react";
+import { Check, X, Star, Zap, Crown, Building, ArrowRight, CreditCard, Clock, Sparkles, Video, Music, Globe } from "lucide-react";
 import UnaiqueLogo from "@/components/ui/logo";
 
 interface PricingPlan {

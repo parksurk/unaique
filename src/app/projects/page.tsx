@@ -9,11 +9,9 @@ import { Loader2, Video, Calendar, Clock, Play, X, ExternalLink, ArrowLeft, LogO
 import { UnaiqueLogo } from '@/components/ui/logo';
 import {
   NavigationMenu,
-  NavigationMenuContent,
   NavigationMenuItem,
   NavigationMenuLink,
   NavigationMenuList,
-  NavigationMenuTrigger,
   navigationMenuTriggerStyle,
 } from '@/components/ui/navigation-menu';
 import Link from 'next/link';
